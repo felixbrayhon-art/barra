@@ -3,7 +3,8 @@ import { GoogleGenAI, Modality, GenerateContentResponse, Type } from "@google/ge
 import { Source, ChatMessage, Flashcard, QuizQuestion, SyllabusTopic, WeeklyTask } from "../types";
 
 // Initialize Gemini Client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey = (typeof process !== 'undefined' && process.env && process.env.API_KEY) || '';
+const ai = new GoogleGenAI({ apiKey });
 
 /**
  * Generates a comprehensive study guide based on a topic name.
@@ -61,14 +62,14 @@ export const generateChatResponse = async (
     
     RESPONDA SEMPRE EM PORTUGUÊS (BRASIL).
   `;
-  
+
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: query,
       config: {
         systemInstruction: systemInstruction,
-        temperature: 0.5, 
+        temperature: 0.5,
       }
     });
 
@@ -83,11 +84,11 @@ export const generateChatResponse = async (
  * Generates a structured summary of all sources.
  */
 export const generateSummary = async (sources: Source[]): Promise<string> => {
-    if (sources.length === 0) throw new Error("Sem temas definidos.");
+  if (sources.length === 0) throw new Error("Sem temas definidos.");
 
-    const context = sources.map(s => `TEMA: ${s.title}\nCONTEÚDO:\n${s.content}`).join("\n\n");
+  const context = sources.map(s => `TEMA: ${s.title}\nCONTEÚDO:\n${s.content}`).join("\n\n");
 
-    const prompt = `
+  const prompt = `
         Atue como um especialista acadêmico. Seu objetivo é criar um RESUMO EXECUTIVO e INTELIGENTE de todo o material abaixo.
         
         O aluno precisa revisar essa matéria rapidamente.
@@ -110,102 +111,102 @@ export const generateSummary = async (sources: Source[]): Promise<string> => {
         ${context}
     `;
 
-    try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
-            contents: prompt,
-        });
-        return response.text || "Não foi possível gerar o resumo.";
-    } catch (error) {
-        console.error("Summary generation error:", error);
-        throw error;
-    }
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: prompt,
+    });
+    return response.text || "Não foi possível gerar o resumo.";
+  } catch (error) {
+    console.error("Summary generation error:", error);
+    throw error;
+  }
 };
 
 /**
  * Generates Flashcards from sources
  */
 export const generateFlashcards = async (sources: Source[]): Promise<Flashcard[]> => {
-    if (sources.length === 0) throw new Error("Sem temas definidos.");
+  if (sources.length === 0) throw new Error("Sem temas definidos.");
 
-    const context = sources.map(s => s.content).join("\n\n").substring(0, 50000);
+  const context = sources.map(s => s.content).join("\n\n").substring(0, 50000);
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: `Com base no material de estudo abaixo, crie 8 flashcards didáticos para revisão ativa. Foque no que é mais provável de cair em uma prova. Idioma: Português do Brasil.\n\nMATERIAL:\n${context}`,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-                type: Type.ARRAY,
-                items: {
-                    type: Type.OBJECT,
-                    properties: {
-                        front: { type: Type.STRING, description: "O conceito, termo ou pergunta" },
-                        back: { type: Type.STRING, description: "A explicação, definição ou resposta" }
-                    },
-                    required: ["front", "back"]
-                }
-            }
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: `Com base no material de estudo abaixo, crie 8 flashcards didáticos para revisão ativa. Foque no que é mais provável de cair em uma prova. Idioma: Português do Brasil.\n\nMATERIAL:\n${context}`,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            front: { type: Type.STRING, description: "O conceito, termo ou pergunta" },
+            back: { type: Type.STRING, description: "A explicação, definição ou resposta" }
+          },
+          required: ["front", "back"]
         }
-    });
-
-    const jsonText = response.text;
-    if (!jsonText) return [];
-    try {
-        return JSON.parse(jsonText) as Flashcard[];
-    } catch (e) {
-        console.error("Failed to parse flashcards JSON", e);
-        return [];
+      }
     }
+  });
+
+  const jsonText = response.text;
+  if (!jsonText) return [];
+  try {
+    return JSON.parse(jsonText) as Flashcard[];
+  } catch (e) {
+    console.error("Failed to parse flashcards JSON", e);
+    return [];
+  }
 };
 
 /**
  * Generates a Quiz from sources
  */
 export const generateQuiz = async (sources: Source[]): Promise<QuizQuestion[]> => {
-    if (sources.length === 0) throw new Error("Sem temas definidos.");
+  if (sources.length === 0) throw new Error("Sem temas definidos.");
 
-    const context = sources.map(s => s.content).join("\n\n").substring(0, 50000);
+  const context = sources.map(s => s.content).join("\n\n").substring(0, 50000);
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: `Atue como um professor elaborando uma prova. Crie 5 questões de múltipla escolha baseadas no assunto estudado. Nível: Médio/Difícil. Idioma: Português do Brasil.\n\nASSUNTO:\n${context}`,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-                type: Type.ARRAY,
-                items: {
-                    type: Type.OBJECT,
-                    properties: {
-                        question: { type: Type.STRING },
-                        options: { 
-                            type: Type.ARRAY, 
-                            items: { type: Type.STRING },
-                            description: "4 opções de resposta"
-                        },
-                        correctAnswer: { 
-                            type: Type.STRING, 
-                            description: "A resposta correta exata, idêntica a uma das opções" 
-                        },
-                        explanation: {
-                            type: Type.STRING,
-                            description: "Uma explicação didática de por que a resposta está correta e por que as outras estão erradas."
-                        }
-                    },
-                    required: ["question", "options", "correctAnswer", "explanation"]
-                }
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: `Atue como um professor elaborando uma prova. Crie 5 questões de múltipla escolha baseadas no assunto estudado. Nível: Médio/Difícil. Idioma: Português do Brasil.\n\nASSUNTO:\n${context}`,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            question: { type: Type.STRING },
+            options: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING },
+              description: "4 opções de resposta"
+            },
+            correctAnswer: {
+              type: Type.STRING,
+              description: "A resposta correta exata, idêntica a uma das opções"
+            },
+            explanation: {
+              type: Type.STRING,
+              description: "Uma explicação didática de por que a resposta está correta e por que as outras estão erradas."
             }
+          },
+          required: ["question", "options", "correctAnswer", "explanation"]
         }
-    });
-
-    const jsonText = response.text;
-    if (!jsonText) return [];
-    try {
-        return JSON.parse(jsonText) as QuizQuestion[];
-    } catch (e) {
-        console.error("Failed to parse quiz JSON", e);
-        return [];
+      }
     }
+  });
+
+  const jsonText = response.text;
+  if (!jsonText) return [];
+  try {
+    return JSON.parse(jsonText) as QuizQuestion[];
+  } catch (e) {
+    console.error("Failed to parse quiz JSON", e);
+    return [];
+  }
 };
 
 /**
@@ -259,7 +260,7 @@ export const generateAudioOverview = async (sources: Source[]): Promise<string> 
           speakerVoiceConfigs: [
             {
               speaker: 'Alex',
-              voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Fenrir' } } 
+              voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Fenrir' } }
             },
             {
               speaker: 'Jamie',
@@ -272,7 +273,7 @@ export const generateAudioOverview = async (sources: Source[]): Promise<string> 
   });
 
   const base64Audio = audioResponse.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-  
+
   if (!base64Audio) {
     throw new Error("Falha ao gerar áudio da aula.");
   }
@@ -291,15 +292,15 @@ export const decodeAudioData = async (
   for (let i = 0; i < len; i++) {
     bytes[i] = binaryString.charCodeAt(i);
   }
-  
+
   const pcmData = new Int16Array(bytes.buffer);
-  const numChannels = 1; 
-  const sampleRate = 24000; 
-  
+  const numChannels = 1;
+  const sampleRate = 24000;
+
   const frameCount = pcmData.length / numChannels;
-  
+
   const buffer = audioContext.createBuffer(numChannels, frameCount, sampleRate);
-  
+
   for (let channel = 0; channel < numChannels; channel++) {
     const channelData = buffer.getChannelData(channel);
     for (let i = 0; i < frameCount; i++) {
@@ -313,7 +314,7 @@ export const decodeAudioData = async (
 // --- NEW SERVICES ---
 
 export const verticalizeSyllabus = async (rawText: string): Promise<SyllabusTopic[]> => {
-    const prompt = `
+  const prompt = `
       Você é um especialista em concursos e organização de estudos.
       Analise o texto do edital/ementa abaixo e quebre-o em uma lista lógica e verticalizada de tópicos para estudo.
       
@@ -325,49 +326,49 @@ export const verticalizeSyllabus = async (rawText: string): Promise<SyllabusTopi
       ${rawText}
     `;
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: prompt,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-                type: Type.ARRAY,
-                items: {
-                    type: Type.OBJECT,
-                    properties: {
-                        name: { type: Type.STRING, description: "Nome do tópico específico" },
-                        category: { type: Type.STRING, description: "Disciplina ou Categoria macro" }
-                    },
-                    required: ["name", "category"]
-                }
-            }
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            name: { type: Type.STRING, description: "Nome do tópico específico" },
+            category: { type: Type.STRING, description: "Disciplina ou Categoria macro" }
+          },
+          required: ["name", "category"]
         }
-    });
-
-    const jsonText = response.text;
-    if (!jsonText) return [];
-    
-    try {
-        const data = JSON.parse(jsonText);
-        // Add default fields
-        return data.map((item: any) => ({
-            id: crypto.randomUUID(),
-            name: item.name,
-            category: item.category,
-            masteryLevel: 0,
-            studied: false,
-            lastRevision: null
-        }));
-    } catch (e) {
-        console.error("Failed to parse syllabus", e);
-        return [];
+      }
     }
+  });
+
+  const jsonText = response.text;
+  if (!jsonText) return [];
+
+  try {
+    const data = JSON.parse(jsonText);
+    // Add default fields
+    return data.map((item: any) => ({
+      id: crypto.randomUUID(),
+      name: item.name,
+      category: item.category,
+      masteryLevel: 0,
+      studied: false,
+      lastRevision: null
+    }));
+  } catch (e) {
+    console.error("Failed to parse syllabus", e);
+    return [];
+  }
 };
 
 export const generateWeeklyPlan = async (topics: SyllabusTopic[], availableTime: string): Promise<WeeklyTask[]> => {
-    const topicList = topics.filter(t => !t.studied).map(t => t.name).slice(0, 20).join(", "); // Limit to next 20 topics
-    
-    const prompt = `
+  const topicList = topics.filter(t => !t.studied).map(t => t.name).slice(0, 20).join(", "); // Limit to next 20 topics
+
+  const prompt = `
       Crie um quadro de estudos semanal baseado nestes tópicos: ${topicList}.
       Tempo disponível descrito pelo aluno: "${availableTime}".
       
@@ -376,42 +377,42 @@ export const generateWeeklyPlan = async (topics: SyllabusTopic[], availableTime:
       Retorne APENAS JSON.
     `;
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: prompt,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-                type: Type.ARRAY,
-                items: {
-                    type: Type.OBJECT,
-                    properties: {
-                        day: { type: Type.STRING, enum: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"] },
-                        task: { type: Type.STRING, description: "Descrição curta da tarefa (ex: Estudar Crase)" }
-                    },
-                    required: ["day", "task"]
-                }
-            }
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            day: { type: Type.STRING, enum: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"] },
+            task: { type: Type.STRING, description: "Descrição curta da tarefa (ex: Estudar Crase)" }
+          },
+          required: ["day", "task"]
         }
-    });
-
-    const jsonText = response.text;
-    if (!jsonText) return [];
-    try {
-        const data = JSON.parse(jsonText);
-        return data.map((item: any) => ({
-            id: crypto.randomUUID(),
-            day: item.day,
-            task: item.task,
-            completed: false
-        }));
-    } catch(e) {
-        return [];
+      }
     }
+  });
+
+  const jsonText = response.text;
+  if (!jsonText) return [];
+  try {
+    const data = JSON.parse(jsonText);
+    return data.map((item: any) => ({
+      id: crypto.randomUUID(),
+      day: item.day,
+      task: item.task,
+      completed: false
+    }));
+  } catch (e) {
+    return [];
+  }
 };
 
 export const generateEbookContent = async (topicName: string): Promise<string> => {
-    const prompt = `
+  const prompt = `
       Escreva um E-BOOK completo e aprofundado sobre: "${topicName}".
       
       Estrutura do E-book (Markdown):
@@ -424,10 +425,10 @@ export const generateEbookContent = async (topicName: string): Promise<string> =
       O tom deve ser profissional, denso e focado em alta performance para provas.
     `;
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: prompt
-    });
+  const response = await ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: prompt
+  });
 
-    return response.text || "Erro ao gerar e-book.";
+  return response.text || "Erro ao gerar e-book.";
 };
