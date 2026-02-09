@@ -1,0 +1,5 @@
+{
+  "name": "Barra Estudo",
+  "description": "Seu tutor pessoal de IA. Escolha um tema e o Barra Estudo cria aulas, quizzes, flashcards e podcasts automaticamente.",
+  "requestFramePermissions": []
+}
