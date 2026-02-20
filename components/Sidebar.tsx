@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import { useState } from 'react';
 import { Source, Folder, SavedItem, AppTab, UserProfile } from '../types';
 import { generateProjectContent } from '../services/geminiService';
 
@@ -73,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         </svg>
                     </div>
                     <h1 className="text-2xl font-black tracking-tight text-black">
-                        Bullet da <span className="text-[#FB8C00]">Raíssa</span>
+                        Bullet da <span className="text-[#FB8C00]">RA</span>
                     </h1>
                 </div>
                 <div className="flex items-center gap-3 pl-1 mt-3">

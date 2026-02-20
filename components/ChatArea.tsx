@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChatMessage, Source } from '../types';
 import { generateChatResponse } from '../services/geminiService';
 import ReactMarkdown from 'react-markdown';
