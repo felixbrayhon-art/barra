@@ -12,11 +12,12 @@ import { HabitTracker } from './components/HabitTracker';
 import { MoodTracker } from './components/MoodTracker';
 import { FinanceTracker } from './components/FinanceTracker';
 import { GratitudeJournal } from './components/GratitudeJournal';
+import { ProfileEditor } from './components/ProfileEditor';
 import { ChatArea } from './components/ChatArea';
 
 import { Source, Folder, SavedItem, UserProfile, BulletJournalState } from './types';
 
-type PageKey = 'inicio' | 'futuro' | 'mensal' | 'semanal' | 'diario' | 'colecoes' | 'habitos' | 'humor' | 'financas' | 'gratidao' | 'chat';
+type PageKey = 'inicio' | 'futuro' | 'mensal' | 'semanal' | 'diario' | 'colecoes' | 'habitos' | 'humor' | 'financas' | 'gratidao' | 'chat' | 'perfil';
 
 const safeJSONParse = (key: string, defaultValue: any) => {
     try {
@@ -93,6 +94,7 @@ function App() {
             case 'financas': return <FinanceTracker state={bujoState} setState={setBujoState} />;
             case 'gratidao': return <GratitudeJournal state={bujoState} setState={setBujoState} />;
             case 'chat': return <ChatArea sources={sources} userName={userProfile.name} />;
+            case 'perfil': return <ProfileEditor profile={userProfile} onSave={p => { setUserProfile(p); localStorage.setItem('barra_user_profile', JSON.stringify(p)); }} />;
             default: return <Dashboard state={bujoState} userName={userProfile.name} />;
         }
     };
@@ -109,7 +111,23 @@ function App() {
                     <h1 style={{ fontSize: 22, fontWeight: 900, letterSpacing: -1, color: '#000', margin: 0 }}>
                         MEU BULLET
                     </h1>
-                    <p style={{ fontSize: 11, color: '#bbb', marginTop: 4 }}>{userProfile.name}</p>
+                    <button onClick={() => setActivePage('perfil')}
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: 10, marginTop: 12,
+                            background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                            fontFamily: "'Inter', sans-serif"
+                        }}
+                        onMouseOver={e => (e.currentTarget.style.opacity = '0.6')}
+                        onMouseOut={e => (e.currentTarget.style.opacity = '1')}
+                    >
+                        <div style={{
+                            width: 28, height: 28, borderRadius: '50%', background: '#111',
+                            color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 12, fontWeight: 800
+                        }}>{userProfile.avatar || userProfile.name.charAt(0).toUpperCase()}</div>
+                        <span style={{ fontSize: 12, color: '#999', fontWeight: 600 }}>{userProfile.name}</span>
+                        <span style={{ fontSize: 10, color: '#ccc' }}>✎</span>
+                    </button>
                 </div>
 
                 {/* Nav Items */}
