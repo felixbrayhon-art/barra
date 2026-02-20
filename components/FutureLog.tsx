@@ -38,19 +38,19 @@ export const FutureLog: React.FC<FutureLogProps> = ({ state, setState }) => {
     };
 
     return (
-        <div style={{ height: '100%', overflow: 'auto', background: '#fff', padding: '48px 64px', fontFamily: "'Inter', sans-serif" }}>
-            <h1 style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, color: '#000', marginBottom: 8 }}>Registro Futuro</h1>
-            <p style={{ fontSize: 13, color: '#999', marginBottom: 40, fontWeight: 500 }}>Planejamento de longo prazo — {currentYear}</p>
+        <div style={{ height: '100%', overflow: 'auto', background: '#f0f2f5', padding: '48px 64px', fontFamily: "'Inter', sans-serif" }}>
+            <h1 style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, color: '#1e2740', marginBottom: 8 }}>Registro Futuro</h1>
+            <p style={{ fontSize: 13, color: '#8b92a5', marginBottom: 40, fontWeight: 500 }}>Planejamento de longo prazo — {currentYear}</p>
 
             {/* Input */}
-            <div style={{ display: 'flex', gap: 8, marginBottom: 40, padding: '12px 16px', background: '#fafafa', borderRadius: 12, border: '1px solid #e5e5e5' }}>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 40, padding: '12px 16px', background: '#fff', borderRadius: 12, border: '1px solid #e0e3ea' }}>
                 <select value={selectedMonth} onChange={e => setSelectedMonth(Number(e.target.value))}
-                    style={{ background: '#000', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: "'Inter'" }}>
+                    style={{ background: '#1e2740', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: "'Inter'" }}>
                     {MONTHS.map((m, i) => <option key={i} value={i}>{m}</option>)}
                 </select>
                 <input value={inputText} onChange={e => setInputText(e.target.value)} onKeyDown={e => e.key === 'Enter' && addFutureEntry()}
                     placeholder="Evento ou meta futura..." style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 14, fontFamily: "'Inter'" }} />
-                <button onClick={addFutureEntry} style={{ padding: '8px 20px', background: '#000', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>+</button>
+                <button onClick={addFutureEntry} style={{ padding: '8px 20px', background: '#1e2740', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>+</button>
             </div>
 
             {/* Months Grid */}

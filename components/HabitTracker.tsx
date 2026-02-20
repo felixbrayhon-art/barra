@@ -22,7 +22,7 @@ const LineChart: React.FC<{
 
     const values = dates.map(d => habit.values?.[d] ?? null);
     const numericValues = values.filter(v => v !== null) as number[];
-    if (numericValues.length === 0) return <p style={{ color: '#ccc', fontSize: 13, fontStyle: 'italic', padding: 20 }}>Sem dados registrados.</p>;
+    if (numericValues.length === 0) return <p style={{ color: '#b5bcc9', fontSize: 13, fontStyle: 'italic', padding: 20 }}>Sem dados registrados.</p>;
 
     const autoMax = Math.max(...numericValues, 1);
     const autoMin = Math.min(...numericValues, 0);
@@ -229,14 +229,14 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
     const activeHabit = state.habits.find(h => h.id === selectedHabit);
 
     return (
-        <div style={{ height: '100%', overflow: 'auto', background: '#fff', padding: '48px 48px', fontFamily: "'Inter', sans-serif" }}>
+        <div style={{ height: '100%', overflow: 'auto', background: '#f0f2f5', padding: '48px 48px', fontFamily: "'Inter', sans-serif" }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
                 <div>
                     <h1 style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>Hábitos</h1>
-                    <p style={{ fontSize: 13, color: '#999', fontWeight: 500 }}>{MONTHS_FULL[currentMonth]} {currentYear}</p>
+                    <p style={{ fontSize: 13, color: '#8b92a5', fontWeight: 500 }}>{MONTHS_FULL[currentMonth]} {currentYear}</p>
                 </div>
                 {/* View Toggle */}
-                <div style={{ display: 'flex', gap: 4, background: '#fafafa', borderRadius: 10, padding: 3, border: '1px solid #eee' }}>
+                <div style={{ display: 'flex', gap: 4, background: '#fff', borderRadius: 10, padding: 3, border: '1px solid #e0e3ea' }}>
                     <button onClick={() => setView('grid')}
                         style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: view === 'grid' ? '#000' : 'transparent', color: view === 'grid' ? '#fff' : '#aaa', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: "'Inter'" }}>
                         ▦ Grid
@@ -251,9 +251,9 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
             {/* Month Nav */}
             <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
                 <button onClick={() => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1); } else setCurrentMonth(m => m - 1); }}
-                    style={{ background: 'none', border: '1px solid #eee', borderRadius: 8, padding: '4px 10px', cursor: 'pointer', fontWeight: 700 }}>←</button>
+                    style={{ background: 'none', border: '1px solid #e0e3ea', borderRadius: 8, padding: '4px 10px', cursor: 'pointer', fontWeight: 700 }}>←</button>
                 <button onClick={() => { if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(y => y + 1); } else setCurrentMonth(m => m + 1); }}
-                    style={{ background: 'none', border: '1px solid #eee', borderRadius: 8, padding: '4px 10px', cursor: 'pointer', fontWeight: 700 }}>→</button>
+                    style={{ background: 'none', border: '1px solid #e0e3ea', borderRadius: 8, padding: '4px 10px', cursor: 'pointer', fontWeight: 700 }}>→</button>
             </div>
 
             {/* Add Habit */}
@@ -264,15 +264,15 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
                     <option value="numeric">📊 Numérico</option>
                 </select>
                 <input value={newHabit} onChange={e => setNewHabit(e.target.value)} onKeyDown={e => e.key === 'Enter' && addHabit()}
-                    placeholder="Nome do hábito..." style={{ flex: 1, minWidth: 150, padding: '10px 14px', background: '#fafafa', border: '1px solid #eee', borderRadius: 8, fontSize: 13, outline: 'none', fontFamily: "'Inter'" }} />
+                    placeholder="Nome do hábito..." style={{ flex: 1, minWidth: 150, padding: '10px 14px', background: '#fff', border: '1px solid #e0e3ea', borderRadius: 8, fontSize: 13, outline: 'none', fontFamily: "'Inter'" }} />
                 {newType === 'numeric' && (
                     <input value={newUnit} onChange={e => setNewUnit(e.target.value)} placeholder="Unidade (horas, km...)"
-                        style={{ width: 120, padding: '10px 14px', background: '#fafafa', border: '1px solid #eee', borderRadius: 8, fontSize: 13, outline: 'none', fontFamily: "'Inter'" }} />
+                        style={{ width: 120, padding: '10px 14px', background: '#fff', border: '1px solid #e0e3ea', borderRadius: 8, fontSize: 13, outline: 'none', fontFamily: "'Inter'" }} />
                 )}
                 <button onClick={addHabit} style={{ padding: '10px 20px', background: '#000', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>+</button>
             </div>
 
-            {state.habits.length === 0 && <p style={{ color: '#ccc', fontSize: 13, fontStyle: 'italic' }}>Adicione seu primeiro hábito acima.</p>}
+            {state.habits.length === 0 && <p style={{ color: '#b5bcc9', fontSize: 13, fontStyle: 'italic' }}>Adicione seu primeiro hábito acima.</p>}
 
             {/* ─── GRID VIEW ─── */}
             {view === 'grid' && (
@@ -280,26 +280,26 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
                     <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                         <thead>
                             <tr>
-                                <th style={{ textAlign: 'left', padding: '8px 12px', fontSize: 11, fontWeight: 700, color: '#aaa', width: 180, position: 'sticky', left: 0, background: '#fff' }}>Hábito</th>
+                                <th style={{ textAlign: 'left', padding: '8px 12px', fontSize: 11, fontWeight: 700, color: '#8b92a5', width: 180, position: 'sticky', left: 0, background: '#f0f2f5' }}>Hábito</th>
                                 {Array.from({ length: daysInMonth }, (_, i) => (
-                                    <th key={i} style={{ padding: 4, fontSize: 10, fontWeight: 600, color: '#ccc', textAlign: 'center', minWidth: 28 }}>{i + 1}</th>
+                                    <th key={i} style={{ padding: 4, fontSize: 10, fontWeight: 600, color: '#b5bcc9', textAlign: 'center', minWidth: 28 }}>{i + 1}</th>
                                 ))}
-                                <th style={{ padding: '8px', fontSize: 11, fontWeight: 700, color: '#aaa', textAlign: 'center' }}>🔥</th>
+                                <th style={{ padding: '8px', fontSize: 11, fontWeight: 700, color: '#8b92a5', textAlign: 'center' }}>🔥</th>
                                 <th style={{ width: 28 }}></th>
                             </tr>
                         </thead>
                         <tbody>
                             {state.habits.map(habit => (
                                 <tr key={habit.id}>
-                                    <td style={{ padding: '6px 12px', position: 'sticky', left: 0, background: '#fff' }}>
+                                    <td style={{ padding: '6px 12px', position: 'sticky', left: 0, background: '#f0f2f5' }}>
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             <input value={habit.name} onChange={e => editHabitName(habit.id, e.target.value)}
                                                 style={{ background: 'transparent', border: 'none', outline: 'none', fontSize: 13, fontWeight: 600, fontFamily: "'Inter'", width: '100%' }} />
                                             {habit.trackType === 'numeric' && (
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                                    <span style={{ fontSize: 10, color: '#ccc' }}>📊</span>
+                                                    <span style={{ fontSize: 10, color: '#b5bcc9' }}>📊</span>
                                                     <input value={habit.unit || ''} onChange={e => editHabitUnit(habit.id, e.target.value)}
-                                                        placeholder="unidade" style={{ background: 'transparent', border: 'none', outline: 'none', fontSize: 10, color: '#aaa', fontFamily: "'Inter'", width: 60 }} />
+                                                        placeholder="unidade" style={{ background: 'transparent', border: 'none', outline: 'none', fontSize: 10, color: '#8b92a5', fontFamily: "'Inter'", width: 60 }} />
                                                 </div>
                                             )}
                                         </div>
@@ -318,7 +318,7 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
                                                         <input autoFocus value={inputValue} onChange={e => setInputValue(e.target.value)}
                                                             onBlur={() => { if (inputValue) setNumericValue(habit.id, dateStr, parseFloat(inputValue)); else setEditingValue(null); }}
                                                             onKeyDown={e => { if (e.key === 'Enter' && inputValue) setNumericValue(habit.id, dateStr, parseFloat(inputValue)); if (e.key === 'Escape') setEditingValue(null); }}
-                                                            style={{ width: 28, height: 24, borderRadius: 4, border: '1px solid #000', background: '#fff', fontSize: 10, textAlign: 'center', outline: 'none', fontFamily: "'Inter'" }} />
+                                                            style={{ width: 28, height: 24, borderRadius: 4, border: '1px solid #000', background: '#f0f2f5', fontSize: 10, textAlign: 'center', outline: 'none', fontFamily: "'Inter'" }} />
                                                     ) : (
                                                         <button onClick={() => { setEditingValue({ habitId: habit.id, date: dateStr }); setInputValue(val !== undefined ? String(val) : ''); }}
                                                             onContextMenu={e => { e.preventDefault(); if (val !== undefined) removeNumericValue(habit.id, dateStr); }}
@@ -351,7 +351,7 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
                                     })}
                                     <td style={{ textAlign: 'center', fontSize: 13, fontWeight: 800 }}>{getStreak(habit)}</td>
                                     <td>
-                                        <button onClick={() => removeHabit(habit.id)} style={{ background: 'none', border: 'none', color: '#ddd', cursor: 'pointer', fontSize: 12 }}>✕</button>
+                                        <button onClick={() => removeHabit(habit.id)} style={{ background: 'none', border: 'none', color: '#c5cad5', cursor: 'pointer', fontSize: 12 }}>✕</button>
                                     </td>
                                 </tr>
                             ))}
@@ -364,7 +364,7 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
             {view === 'chart' && (
                 <div>
                     {/* Range selector */}
-                    <div style={{ display: 'flex', gap: 4, marginBottom: 24, background: '#fafafa', borderRadius: 10, padding: 3, border: '1px solid #eee', width: 'fit-content' }}>
+                    <div style={{ display: 'flex', gap: 4, marginBottom: 24, background: '#fff', borderRadius: 10, padding: 3, border: '1px solid #e0e3ea', width: 'fit-content' }}>
                         {(['week', 'month', 'year'] as const).map(r => (
                             <button key={r} onClick={() => setChartRange(r)}
                                 style={{
@@ -397,11 +397,11 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
 
                     {/* Chart */}
                     {activeHabit ? (
-                        <div style={{ background: '#fafafa', borderRadius: 16, padding: '24px 24px 16px', border: '1px solid #eee' }}>
+                        <div style={{ background: '#fff', borderRadius: 16, padding: '24px 24px 16px', border: '1px solid #e0e3ea' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                                 <div>
                                     <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>{activeHabit.name}</h3>
-                                    <p style={{ fontSize: 11, color: '#aaa', marginTop: 2 }}>
+                                    <p style={{ fontSize: 11, color: '#8b92a5', marginTop: 2 }}>
                                         Eixo X: {chartRange === 'week' ? 'dias (semana)' : chartRange === 'month' ? 'dias (mês)' : 'meses (ano)'}
                                     </p>
                                 </div>
@@ -410,19 +410,19 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
 
                             {/* Y-Axis Controls */}
                             <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-                                <span style={{ fontSize: 11, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1 }}>Eixo Y:</span>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: '#8b92a5', textTransform: 'uppercase', letterSpacing: 1 }}>Eixo Y:</span>
                                 <input value={customYLabel} onChange={e => setCustomYLabel(e.target.value)}
                                     placeholder={activeHabit.unit || 'Rótulo (ex: horas)'}
-                                    style={{ width: 120, padding: '6px 10px', background: '#fff', border: '1px solid #e5e5e5', borderRadius: 6, fontSize: 12, outline: 'none', fontFamily: "'Inter'" }} />
+                                    style={{ width: 120, padding: '6px 10px', background: '#f0f2f5', border: '1px solid #e0e3ea', borderRadius: 6, fontSize: 12, outline: 'none', fontFamily: "'Inter'" }} />
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                     <span style={{ fontSize: 11, color: '#bbb' }}>Min:</span>
                                     <input value={customYMin} onChange={e => setCustomYMin(e.target.value)} type="number" placeholder="auto"
-                                        style={{ width: 60, padding: '6px 8px', background: '#fff', border: '1px solid #e5e5e5', borderRadius: 6, fontSize: 12, outline: 'none', textAlign: 'center', fontFamily: "'Inter'" }} />
+                                        style={{ width: 60, padding: '6px 8px', background: '#f0f2f5', border: '1px solid #e0e3ea', borderRadius: 6, fontSize: 12, outline: 'none', textAlign: 'center', fontFamily: "'Inter'" }} />
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                     <span style={{ fontSize: 11, color: '#bbb' }}>Max:</span>
                                     <input value={customYMax} onChange={e => setCustomYMax(e.target.value)} type="number" placeholder="auto"
-                                        style={{ width: 60, padding: '6px 8px', background: '#fff', border: '1px solid #e5e5e5', borderRadius: 6, fontSize: 12, outline: 'none', textAlign: 'center', fontFamily: "'Inter'" }} />
+                                        style={{ width: 60, padding: '6px 8px', background: '#f0f2f5', border: '1px solid #e0e3ea', borderRadius: 6, fontSize: 12, outline: 'none', textAlign: 'center', fontFamily: "'Inter'" }} />
                                 </div>
                             </div>
 
@@ -447,7 +447,7 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
                             )}
                         </div>
                     ) : (
-                        <div style={{ padding: 40, textAlign: 'center', color: '#ccc', fontSize: 14 }}>
+                        <div style={{ padding: 40, textAlign: 'center', color: '#b5bcc9', fontSize: 14 }}>
                             Selecione um hábito acima para ver o gráfico
                         </div>
                     )}

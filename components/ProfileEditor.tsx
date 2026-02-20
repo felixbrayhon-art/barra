@@ -23,15 +23,15 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onSave })
 
     return (
         <div style={{
-            height: '100%', overflow: 'auto', background: '#fff', padding: '48px 64px',
+            height: '100%', overflow: 'auto', background: '#f0f2f5', padding: '48px 64px',
             fontFamily: "'Inter', sans-serif"
         }}>
             <h1 style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>Perfil</h1>
-            <p style={{ fontSize: 13, color: '#999', marginBottom: 48, fontWeight: 500 }}>Edite suas informações pessoais</p>
+            <p style={{ fontSize: 13, color: '#8b92a5', marginBottom: 48, fontWeight: 500 }}>Edite suas informações pessoais</p>
 
             {/* Avatar */}
             <div style={{ marginBottom: 40 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>Avatar</p>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#8b92a5', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>Avatar</p>
                 <div style={{ display: 'flex', gap: 12 }}>
                     {AVATARS.map(a => (
                         <button key={a} onClick={() => setAvatar(a)}
@@ -52,14 +52,14 @@ export const ProfileEditor: React.FC<ProfileEditorProps> = ({ profile, onSave })
 
             {/* Name */}
             <div style={{ marginBottom: 40 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>Nome</p>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#8b92a5', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>Nome</p>
                 <input
                     value={name}
                     onChange={e => setName(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleSave()}
                     style={{
-                        width: '100%', maxWidth: 400, padding: '14px 20px', background: '#fafafa',
-                        border: '1px solid #eee', borderRadius: 12, fontSize: 16, fontWeight: 600,
+                        width: '100%', maxWidth: 400, padding: '14px 20px', background: '#fff',
+                        border: '1px solid #e0e3ea', borderRadius: 12, fontSize: 16, fontWeight: 600,
                         outline: 'none', fontFamily: "'Inter', sans-serif"
                     }}
                 />

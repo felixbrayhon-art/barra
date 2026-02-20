@@ -25,13 +25,13 @@ export const WeeklyLog: React.FC<WeeklyLogProps> = ({ state, setState }) => {
 
     return (
         <div style={{
-            height: '100%', overflow: 'auto', background: '#fff', padding: '48px 48px',
+            height: '100%', overflow: 'auto', background: '#f0f2f5', padding: '48px 48px',
             fontFamily: "'Inter', sans-serif"
         }}>
-            <h1 style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, color: '#000', margin: 0, marginBottom: 8 }}>
+            <h1 style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, color: '#1e2740', margin: 0, marginBottom: 8 }}>
                 Semanal
             </h1>
-            <p style={{ fontSize: 13, color: '#999', marginBottom: 40, fontWeight: 500 }}>
+            <p style={{ fontSize: 13, color: '#8b92a5', marginBottom: 40, fontWeight: 500 }}>
                 Visão da semana atual
             </p>
 

@@ -54,15 +54,15 @@ export const BulletJournal: React.FC<BulletJournalProps> = ({ state, setState })
 
     return (
         <div style={{
-            height: '100%', overflow: 'auto', background: '#fff', padding: '48px 64px',
+            height: '100%', overflow: 'auto', background: '#f0f2f5', padding: '48px 64px',
             fontFamily: "'Inter', sans-serif"
         }}>
             {/* Header */}
             <div style={{ marginBottom: 48 }}>
-                <h1 style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, color: '#000', margin: 0 }}>
+                <h1 style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, color: '#1e2740', margin: 0 }}>
                     Diário
                 </h1>
-                <p style={{ fontSize: 13, color: '#999', marginTop: 4, fontWeight: 500 }}>
+                <p style={{ fontSize: 13, color: '#8b92a5', marginTop: 4, fontWeight: 500 }}>
                     {formatDate(activeDate)}
                 </p>
             </div>
@@ -100,13 +100,13 @@ export const BulletJournal: React.FC<BulletJournalProps> = ({ state, setState })
             {/* Input */}
             <div style={{
                 display: 'flex', gap: 8, marginBottom: 40, padding: '12px 16px',
-                background: '#fafafa', borderRadius: 12, border: '1px solid #e5e5e5'
+                background: '#fff', borderRadius: 12, border: '1px solid #e0e3ea'
             }}>
                 <select
                     value={inputType}
                     onChange={e => setInputType(e.target.value as BulletType)}
                     style={{
-                        background: '#000', color: '#fff', border: 'none', borderRadius: 8,
+                        background: '#1e2740', color: '#fff', border: 'none', borderRadius: 8,
                         padding: '8px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer',
                         fontFamily: "'Inter', sans-serif"
                     }}
@@ -122,13 +122,13 @@ export const BulletJournal: React.FC<BulletJournalProps> = ({ state, setState })
                     placeholder="Escreva aqui..."
                     style={{
                         flex: 1, background: 'transparent', border: 'none', outline: 'none',
-                        fontSize: 14, color: '#000', fontFamily: "'Inter', sans-serif"
+                        fontSize: 14, color: '#1e2740', fontFamily: "'Inter', sans-serif"
                     }}
                 />
                 <button
                     onClick={addEntry}
                     style={{
-                        padding: '8px 20px', background: '#000', color: '#fff', border: 'none',
+                        padding: '8px 20px', background: '#1e2740', color: '#fff', border: 'none',
                         borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: 'pointer'
                     }}
                 >
@@ -139,7 +139,7 @@ export const BulletJournal: React.FC<BulletJournalProps> = ({ state, setState })
             {/* Entries */}
             <div>
                 {todayEntries.length === 0 && (
-                    <p style={{ color: '#ccc', fontSize: 14, textAlign: 'center', padding: 40 }}>
+                    <p style={{ color: '#b5bcc9', fontSize: 14, textAlign: 'center', padding: 40 }}>
                         Nenhuma entrada para este dia.
                     </p>
                 )}
@@ -178,7 +178,7 @@ export const BulletJournal: React.FC<BulletJournalProps> = ({ state, setState })
                         <button
                             onClick={() => removeEntry(entry.id)}
                             style={{
-                                background: 'none', border: 'none', color: '#ddd',
+                                background: 'none', border: 'none', color: '#c5cad5',
                                 cursor: 'pointer', fontSize: 16, padding: '0 4px'
                             }}
                             onMouseOver={e => (e.currentTarget.style.color = '#000')}
@@ -193,21 +193,21 @@ export const BulletJournal: React.FC<BulletJournalProps> = ({ state, setState })
             {/* Stats */}
             {todayEntries.length > 0 && (
                 <div style={{
-                    marginTop: 32, padding: '16px 20px', background: '#fafafa',
+                    marginTop: 32, padding: '16px 20px', background: '#fff',
                     borderRadius: 12, display: 'flex', gap: 24
                 }}>
-                    <div style={{ fontSize: 12, color: '#999' }}>
-                        <strong style={{ color: '#000', fontSize: 18, display: 'block' }}>
+                    <div style={{ fontSize: 12, color: '#8b92a5' }}>
+                        <strong style={{ color: '#1e2740', fontSize: 18, display: 'block' }}>
                             {todayEntries.filter(e => e.type === 'completed').length}
                         </strong> concluídas
                     </div>
-                    <div style={{ fontSize: 12, color: '#999' }}>
-                        <strong style={{ color: '#000', fontSize: 18, display: 'block' }}>
+                    <div style={{ fontSize: 12, color: '#8b92a5' }}>
+                        <strong style={{ color: '#1e2740', fontSize: 18, display: 'block' }}>
                             {todayEntries.filter(e => e.type === 'task').length}
                         </strong> pendentes
                     </div>
-                    <div style={{ fontSize: 12, color: '#999' }}>
-                        <strong style={{ color: '#000', fontSize: 18, display: 'block' }}>
+                    <div style={{ fontSize: 12, color: '#8b92a5' }}>
+                        <strong style={{ color: '#1e2740', fontSize: 18, display: 'block' }}>
                             {todayEntries.length}
                         </strong> total
                     </div>

@@ -43,36 +43,36 @@ export const MonthlyLog: React.FC<MonthlyLogProps> = ({ state, setState }) => {
     const total = monthEntries.length;
 
     return (
-        <div style={{ height: '100%', overflow: 'auto', background: '#fff', padding: '48px 64px', fontFamily: "'Inter', sans-serif" }}>
-            <h1 style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, color: '#000', marginBottom: 8 }}>Visão Mensal</h1>
+        <div style={{ height: '100%', overflow: 'auto', background: '#f0f2f5', padding: '48px 64px', fontFamily: "'Inter', sans-serif" }}>
+            <h1 style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, color: '#1e2740', marginBottom: 8 }}>Visão Mensal</h1>
 
             {/* Month Navigation */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
-                <button onClick={prevMonth} style={{ background: 'none', border: '1px solid #eee', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>←</button>
+                <button onClick={prevMonth} style={{ background: 'none', border: '1px solid #e0e3ea', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>←</button>
                 <h2 style={{ fontSize: 20, fontWeight: 800, minWidth: 200, textAlign: 'center' }}>{MONTHS[currentMonth]} {currentYear}</h2>
-                <button onClick={nextMonth} style={{ background: 'none', border: '1px solid #eee', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>→</button>
+                <button onClick={nextMonth} style={{ background: 'none', border: '1px solid #e0e3ea', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 }}>→</button>
             </div>
 
             {/* Stats Row */}
             <div style={{ display: 'flex', gap: 16, marginBottom: 32 }}>
-                <div style={{ padding: '16px 24px', background: '#000', color: '#fff', borderRadius: 12 }}>
+                <div style={{ padding: '16px 24px', background: '#1e2740', color: '#fff', borderRadius: 12 }}>
                     <div style={{ fontSize: 24, fontWeight: 900 }}>{total}</div>
                     <div style={{ fontSize: 11, color: '#888' }}>registros</div>
                 </div>
-                <div style={{ padding: '16px 24px', background: '#fafafa', borderRadius: 12, border: '1px solid #eee' }}>
+                <div style={{ padding: '16px 24px', background: '#fff', borderRadius: 12, border: '1px solid #e0e3ea' }}>
                     <div style={{ fontSize: 24, fontWeight: 900 }}>{completed}</div>
-                    <div style={{ fontSize: 11, color: '#aaa' }}>concluídos</div>
+                    <div style={{ fontSize: 11, color: '#8b92a5' }}>concluídos</div>
                 </div>
-                <div style={{ padding: '16px 24px', background: '#fafafa', borderRadius: 12, border: '1px solid #eee' }}>
+                <div style={{ padding: '16px 24px', background: '#fff', borderRadius: 12, border: '1px solid #e0e3ea' }}>
                     <div style={{ fontSize: 24, fontWeight: 900 }}>{total > 0 ? Math.round((completed / total) * 100) : 0}%</div>
-                    <div style={{ fontSize: 11, color: '#aaa' }}>produtividade</div>
+                    <div style={{ fontSize: 11, color: '#8b92a5' }}>produtividade</div>
                 </div>
             </div>
 
             {/* Calendar Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
                 {WEEKDAYS.map(d => (
-                    <div key={d} style={{ padding: 8, textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#aaa', textTransform: 'uppercase' }}>{d}</div>
+                    <div key={d} style={{ padding: 8, textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#8b92a5', textTransform: 'uppercase' }}>{d}</div>
                 ))}
                 {Array.from({ length: firstDay }, (_, i) => (
                     <div key={`empty-${i}`} />
