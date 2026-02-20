@@ -67,9 +67,18 @@
   <div id="root" class="h-full">
     <div
       style="display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; color: #E6FF57; font-family: monospace; font-weight: bold; font-size: 20px;">
-      <div>SISTEMA: INICIANDO...</div>
-      <div style="font-size: 12px; margin-top: 10px; color: #475569;">SE ESTIVER VENDO ISSO, O JS AINDA NÃO CARREGOU.
-      </div>
+      <div id="boot-status">SISTEMA: INICIANDO...</div>
+      <div id="boot-sub" style="font-size: 12px; margin-top: 10px; color: #475569;">SE ESTIVER VENDO ISSO, O JS AINDA
+        NÃO CARREGOU.</div>
+      <script>
+        setTimeout(function () {
+          var status = document.getElementById('boot-status');
+          if (status && status.innerText === 'SISTEMA: INICIANDO...') {
+            status.innerText = '⚓ FALHA NO MOTOR (JS)';
+            document.getElementById('boot-sub').innerHTML = 'O aplicativo demorou muito para carregar. <br><button onclick="localStorage.clear(); location.reload()" style="margin-top:10px; background:#FB8C00; color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer">Limpar Dados e Reiniciar</button>';
+          }
+        }, 5000);
+      </script>
     </div>
   </div>
   <script type="module" src="/index.tsx"></script>

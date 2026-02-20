@@ -1,9 +1,9 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom/client';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
-console.log("Index.tsx: Booting (Step 1)");
+console.log("Index.tsx: Booting...");
 document.body.style.border = '5px solid #FB8C00';
 document.body.style.boxSizing = 'border-box';
 
