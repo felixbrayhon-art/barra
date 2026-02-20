@@ -130,7 +130,10 @@ export interface Habit {
   id: string;
   name: string;
   color: string;
-  completions: string[]; // List of YYYY-MM-DD
+  completions: string[]; // List of YYYY-MM-DD (for boolean habits)
+  trackType: 'boolean' | 'numeric'; // boolean = done/not done, numeric = value per day
+  unit?: string; // e.g. "horas", "km", "copos"
+  values?: Record<string, number>; // { "YYYY-MM-DD": value } for numeric habits
 }
 
 export interface MoodEntry {
