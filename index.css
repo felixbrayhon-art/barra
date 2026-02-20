@@ -1,8 +1,23 @@
 /* Main CSS file */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
+:root {
+    --pastel-white: #FFFFFF;
+    --pastel-yellow: #FFF9C4;
+    --pastel-orange: #FFE0B2;
+    --pastel-green: #C8E6C9;
+    --pastel-yellow-dark: #FBC02D;
+    --pastel-orange-dark: #FB8C00;
+    --pastel-green-dark: #43A047;
+    --bg-main: #FAFBFC;
+}
+
 body {
     margin: 0;
+    padding: 0;
+    background-color: var(--bg-main);
+    color: #2D3436;
+    transition: background-color 0.5s ease;
     font-family: 'Poppins', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

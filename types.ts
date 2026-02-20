@@ -16,15 +16,16 @@ export interface ChatMessage {
 }
 
 export enum AppTab {
-  CHAT = 'CHAT',
-  SUMMARY = 'SUMMARY',
-  AUDIO = 'AUDIO',
-  FLASHCARDS = 'FLASHCARDS',
-  QUIZ = 'QUIZ',
-  // New Tabs
-  PLANNER = 'PLANNER',
-  SYLLABUS = 'SYLLABUS',
-  DASHBOARD = 'DASHBOARD'
+  DIARIO = 'DIARIO',
+  SEMANAL = 'SEMANAL',
+  MENSAL = 'MENSAL',
+  FUTURO = 'FUTURO',
+  COLECOES = 'COLECOES',
+  HABITOS = 'HABITOS',
+  HUMOR = 'HUMOR',
+  FINANCAS = 'FINANCAS',
+  GRATIDAO = 'GRATIDAO',
+  CHAT = 'CHAT'
 }
 
 export interface AudioState {
@@ -104,4 +105,52 @@ export interface WeeklyTask {
   day: string; // "Segunda", "Terça"...
   task: string;
   completed: boolean;
+}
+
+// --- BULLET JOURNAL TYPES ---
+
+export type BulletType = 'task' | 'note' | 'event' | 'completed' | 'migrated' | 'cancelled';
+
+export interface BulletEntry {
+  id: string;
+  type: BulletType;
+  text: string;
+  date: string; // YYYY-MM-DD
+  collectionId?: string;
+}
+
+export interface Collection {
+  id: string;
+  name: string;
+  icon?: string;
+}
+
+export interface Habit {
+  id: string;
+  name: string;
+  color: string;
+  completions: string[]; // List of YYYY-MM-DD
+}
+
+export interface MoodEntry {
+  date: string; // YYYY-MM-DD
+  mood: 'happy' | 'neutral' | 'sad' | 'productive' | 'tired';
+}
+
+export interface FinanceEntry {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  type: 'income' | 'expense';
+  category: string;
+}
+
+export interface BulletJournalState {
+  entries: BulletEntry[];
+  collections: Collection[];
+  habits: Habit[];
+  moods: MoodEntry[];
+  finances: FinanceEntry[];
+  gratitude: { date: string; text: string }[];
 }

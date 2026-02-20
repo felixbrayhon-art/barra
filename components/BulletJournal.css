@@ -1,0 +1,67 @@
+.bujo-paper {
+    background-color: #fdfaf3;
+    background-image:
+        radial-gradient(#d1d1d1 1px, transparent 1px),
+        radial-gradient(#d1d1d1 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.bujo-paper::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 40px;
+    bottom: 0;
+    width: 2px;
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.bujo-entry {
+    transition: all 0.2s duration;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.bujo-entry:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.bullet-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: #FB8C00;
+    flex-shrink: 0;
+}
+
+.bullet-task {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: #43A047;
+    flex-shrink: 0;
+}
+
+.bullet-note {
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 2px solid #FB8C00;
+    background-color: transparent;
+    flex-shrink: 0;
+}
+
+.bullet-event {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 8px solid #FBC02D;
+    flex-shrink: 0;
+}

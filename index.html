@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Barra Estudo</title>
+  <title>Bullet da Raíssa</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -52,14 +52,17 @@
   <link rel="stylesheet" href="/index.css">
 </head>
 
-<body class="bg-[#0F1115] text-white h-screen overflow-hidden selection:bg-yellow-400 selection:text-black">
+<body class="bg-[#1a1a1a] text-white h-screen overflow-hidden selection:bg-yellow-400 selection:text-black"
+  style="background-color: #1a1a1a !important;">
   <div id="root" class="h-full">
     <div
-      style="display: flex; height: 100%; align-items: center; justify-content: center; color: #475569; font-family: sans-serif;">
-      Carregando...
+      style="display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; color: #E6FF57; font-family: monospace; font-weight: bold; font-size: 20px;">
+      <div>SYSTEM STATUS: BOOTING...</div>
+      <div style="font-size: 12px; margin-top: 10px; color: #475569;">IF YOU SEE THIS, HTML LOADED. WAITING FOR JS...
+      </div>
     </div>
   </div>
-  <script type="module" src="./index.tsx"></script>
+  <script type="module" src="/index.tsx"></script>
 </body>
 
 </html>

@@ -1,271 +1,242 @@
-
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/ChatArea';
-import { AudioPlayer } from './components/AudioPlayer';
-import { FlashcardDeck } from './components/FlashcardDeck';
-import { QuizMode } from './components/QuizMode';
 import { SplashScreen } from './components/SplashScreen';
-import { SummaryView } from './components/SummaryView';
 import { Onboarding } from './components/Onboarding';
-import { Planner } from './components/Planner';
-import { SyllabusManager } from './components/SyllabusManager';
-import { Dashboard } from './components/Dashboard';
+import { BulletJournal } from './components/BulletJournal';
+import { WeeklyLog } from './components/WeeklyLog';
+import { MonthlyLog } from './components/MonthlyLog';
+import { HabitTracker } from './components/HabitTracker';
+import { CollectionsView } from './components/CollectionsView';
+import { MoodTracker } from './components/MoodTracker';
+import { FinanceTracker } from './components/FinanceTracker';
+import { GratitudeJournal } from './components/GratitudeJournal';
+import { FutureLog } from './components/FutureLog';
 
-import { Source, AppTab, Folder, SavedItem, UserProfile, SyllabusTopic, StudySession, MockExam, ExamDate, WeeklyTask } from './types';
+import { Source, AppTab, Folder, SavedItem, UserProfile, SyllabusTopic, StudySession, MockExam, ExamDate, WeeklyTask, BulletJournalState } from './types';
 
 function App() {
-  const [loading, setLoading] = useState(true);
-  
-  // -- USER PROFILE --
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
-      try { return JSON.parse(localStorage.getItem('barra_user_profile') || 'null'); } catch (e) { return null; }
-  });
+    const [loading, setLoading] = useState(false);
 
-  // -- EXISTING DATA --
-  const [sources, setSources] = useState<Source[]>(() => {
-    try { return JSON.parse(localStorage.getItem('barra_sources') || '[]'); } catch (e) { return []; }
-  });
-  const [folders, setFolders] = useState<Folder[]>(() => {
-    try { return JSON.parse(localStorage.getItem('barra_folders') || '[]'); } catch (e) { return []; }
-  });
-  const [savedItems, setSavedItems] = useState<SavedItem[]>(() => {
-    try { return JSON.parse(localStorage.getItem('barra_saved_items') || '[]'); } catch (e) { return []; }
-  });
+    // -- USER PROFILE --
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
+        try { return JSON.parse(localStorage.getItem('barra_user_profile') || 'null'); } catch (e) { return null; }
+    });
 
-  // -- NEW DATA STATES --
-  const [topics, setTopics] = useState<SyllabusTopic[]>(() => {
-      try { return JSON.parse(localStorage.getItem('barra_syllabus') || '[]'); } catch (e) { return []; }
-  });
-  const [sessions, setSessions] = useState<StudySession[]>(() => {
-      try { return JSON.parse(localStorage.getItem('barra_sessions') || '[]'); } catch (e) { return []; }
-  });
-  const [mockExams, setMockExams] = useState<MockExam[]>(() => {
-      try { return JSON.parse(localStorage.getItem('barra_mocks') || '[]'); } catch (e) { return []; }
-  });
-  const [examDates, setExamDates] = useState<ExamDate[]>(() => {
-      try { return JSON.parse(localStorage.getItem('barra_exams') || '[]'); } catch (e) { return []; }
-  });
-  const [weeklyTasks, setWeeklyTasks] = useState<WeeklyTask[]>(() => {
-      try { return JSON.parse(localStorage.getItem('barra_tasks') || '[]'); } catch (e) { return []; }
-  });
+    // -- EXISTING DATA --
+    const [sources, setSources] = useState<Source[]>(() => {
+        try { return JSON.parse(localStorage.getItem('barra_sources') || '[]'); } catch (e) { return []; }
+    });
+    const [folders, setFolders] = useState<Folder[]>(() => {
+        try { return JSON.parse(localStorage.getItem('barra_folders') || '[]'); } catch (e) { return []; }
+    });
+    const [savedItems, setSavedItems] = useState<SavedItem[]>(() => {
+        try { return JSON.parse(localStorage.getItem('barra_saved_items') || '[]'); } catch (e) { return []; }
+    });
 
-  const [activeTab, setActiveTab] = useState<AppTab>(AppTab.PLANNER); // Default to Planner now
-  const [loadedContent, setLoadedContent] = useState<any>(null);
+    // -- NEW DATA STATES --
+    const [topics, setTopics] = useState<SyllabusTopic[]>(() => {
+        try { return JSON.parse(localStorage.getItem('barra_syllabus') || '[]'); } catch (e) { return []; }
+    });
+    const [sessions, setSessions] = useState<StudySession[]>(() => {
+        try { return JSON.parse(localStorage.getItem('barra_sessions') || '[]'); } catch (e) { return []; }
+    });
+    const [mockExams, setMockExams] = useState<MockExam[]>(() => {
+        try { return JSON.parse(localStorage.getItem('barra_mocks') || '[]'); } catch (e) { return []; }
+    });
+    const [examDates, setExamDates] = useState<ExamDate[]>(() => {
+        try { return JSON.parse(localStorage.getItem('barra_exams') || '[]'); } catch (e) { return []; }
+    });
+    const [weeklyTasks, setWeeklyTasks] = useState<WeeklyTask[]>(() => {
+        try { return JSON.parse(localStorage.getItem('barra_tasks') || '[]'); } catch (e) { return []; }
+    });
+    const [bujoState, setBujoState] = useState<BulletJournalState>(() => {
+        const defaultState = { entries: [], collections: [], habits: [], moods: [], finances: [], gratitude: [] };
+        try {
+            const saved = localStorage.getItem('barra_bujo');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                return { ...defaultState, ...parsed };
+            }
+            return defaultState;
+        } catch (e) {
+            return defaultState;
+        }
+    });
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-        setLoading(false);
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, []);
+    const [activeTab, setActiveTab] = useState<AppTab>(AppTab.DIARIO); // Default to Diario
+    const [loadedContent, setLoadedContent] = useState<any>(null);
 
-  // Persistence
-  useEffect(() => { localStorage.setItem('barra_sources', JSON.stringify(sources)); }, [sources]);
-  useEffect(() => { localStorage.setItem('barra_folders', JSON.stringify(folders)); }, [folders]);
-  useEffect(() => { localStorage.setItem('barra_saved_items', JSON.stringify(savedItems)); }, [savedItems]);
-  useEffect(() => { if(userProfile) localStorage.setItem('barra_user_profile', JSON.stringify(userProfile)); }, [userProfile]);
-  
-  // New Persistence
-  useEffect(() => { localStorage.setItem('barra_syllabus', JSON.stringify(topics)); }, [topics]);
-  useEffect(() => { localStorage.setItem('barra_sessions', JSON.stringify(sessions)); }, [sessions]);
-  useEffect(() => { localStorage.setItem('barra_mocks', JSON.stringify(mockExams)); }, [mockExams]);
-  useEffect(() => { localStorage.setItem('barra_exams', JSON.stringify(examDates)); }, [examDates]);
-  useEffect(() => { localStorage.setItem('barra_tasks', JSON.stringify(weeklyTasks)); }, [weeklyTasks]);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 2500);
+        return () => clearTimeout(timer);
+    }, []);
 
-  // Handlers
-  const handleProfileCreate = (profile: UserProfile) => {
-      setUserProfile(profile);
-  };
+    // Persistence
+    useEffect(() => { localStorage.setItem('barra_sources', JSON.stringify(sources)); }, [sources]);
+    useEffect(() => { localStorage.setItem('barra_folders', JSON.stringify(folders)); }, [folders]);
+    useEffect(() => { localStorage.setItem('barra_saved_items', JSON.stringify(savedItems)); }, [savedItems]);
+    useEffect(() => { if (userProfile) localStorage.setItem('barra_user_profile', JSON.stringify(userProfile)); }, [userProfile]);
 
-  const handleAddSource = (source: Source) => {
-    setSources((prev) => [source, ...prev]);
-  };
+    // New Persistence
+    useEffect(() => { localStorage.setItem('barra_syllabus', JSON.stringify(topics)); }, [topics]);
+    useEffect(() => { localStorage.setItem('barra_sessions', JSON.stringify(sessions)); }, [sessions]);
+    useEffect(() => { localStorage.setItem('barra_mocks', JSON.stringify(mockExams)); }, [mockExams]);
+    useEffect(() => { localStorage.setItem('barra_exams', JSON.stringify(examDates)); }, [examDates]);
+    useEffect(() => { localStorage.setItem('barra_tasks', JSON.stringify(weeklyTasks)); }, [weeklyTasks]);
+    useEffect(() => { localStorage.setItem('barra_bujo', JSON.stringify(bujoState)); }, [bujoState]);
 
-  const handleRemoveSource = (id: string) => {
-    setSources((prev) => prev.filter((s) => s.id !== id));
-  };
+    // Handlers
+    const handleProfileCreate = (profile: UserProfile) => {
+        setUserProfile(profile);
+    };
 
-  const handleCreateFolder = (name: string): string => {
-      const newFolder: Folder = { id: crypto.randomUUID(), name, createdAt: Date.now() };
-      setFolders(prev => [...prev, newFolder]);
-      return newFolder.id;
-  };
+    const handleAddSource = (source: Source) => {
+        setSources((prev) => [source, ...prev]);
+    };
 
-  const handleSaveItem = (item: Omit<SavedItem, 'id' | 'createdAt'>) => {
-      const newItem: SavedItem = { ...item, id: crypto.randomUUID(), createdAt: Date.now() };
-      setSavedItems(prev => [newItem, ...prev]);
-      // If it's an EBOOK or standard save, we notify user.
-      if (item.type !== 'EBOOK') { 
-        alert("Salvo com sucesso!");
-      }
-  };
+    const handleRemoveSource = (id: string) => {
+        setSources((prev) => prev.filter((s) => s.id !== id));
+    };
 
-  const handleLoadItem = (item: SavedItem) => {
-      setLoadedContent(item.data);
-      if (item.type === 'EBOOK') {
-          setActiveTab(AppTab.SUMMARY); // Load E-books into Summary view
-      } else {
-          setActiveTab(item.type as AppTab);
-      }
-  };
+    const handleCreateFolder = (name: string): string => {
+        const newFolder: Folder = { id: crypto.randomUUID(), name, createdAt: Date.now() };
+        setFolders(prev => [...prev, newFolder]);
+        return newFolder.id;
+    };
 
-  const handleDeleteItem = (id: string) => {
-      if(confirm("Excluir este item?")) {
-          setSavedItems(prev => prev.filter(i => i.id !== id));
-      }
-  };
+    const handleSaveItem = (item: Omit<SavedItem, 'id' | 'createdAt'>) => {
+        const newItem: SavedItem = { ...item, id: crypto.randomUUID(), createdAt: Date.now() };
+        setSavedItems(prev => [newItem, ...prev]);
+        // If it's an EBOOK or standard save, we notify user.
+        if (item.type !== 'EBOOK') {
+            alert("Salvo com sucesso!");
+        }
+    };
 
-  const handleDeleteFolder = (id: string) => {
-      if(confirm("Excluir pasta e todos os itens dentro?")) {
-          setFolders(prev => prev.filter(f => f.id !== id));
-          setSavedItems(prev => prev.filter(i => i.folderId !== id));
-      }
-  };
+    const handleLoadItem = (item: SavedItem) => {
+        setLoadedContent(item.data);
+        if (item.type === 'EBOOK') {
+            setActiveTab(AppTab.DIARIO); // Fallback to Diario for legacy saves
+        } else {
+            setActiveTab(item.type as AppTab);
+        }
+    };
 
-  const handleSessionComplete = (duration: number) => {
-      setSessions([...sessions, { id: crypto.randomUUID(), date: Date.now(), durationSeconds: duration }]);
-  };
+    const handleDeleteItem = (id: string) => {
+        if (confirm("Excluir este item?")) {
+            setSavedItems(prev => prev.filter(i => i.id !== id));
+        }
+    };
 
-  const handleResetApp = () => {
-    if (confirm("Tem certeza? Isso apagará todos os seus dados e perfil.")) {
-        localStorage.clear();
-        window.location.reload();
-    }
-  };
+    const handleDeleteFolder = (id: string) => {
+        if (confirm("Excluir pasta e todos os itens dentro?")) {
+            setFolders(prev => prev.filter(f => f.id !== id));
+            setSavedItems(prev => prev.filter(i => i.folderId !== id));
+        }
+    };
 
-  const getTabClass = (tab: AppTab) => `
-    relative px-4 py-2 text-xs font-bold rounded-[1rem] transition-all duration-300 flex items-center space-x-2 whitespace-nowrap
-    ${activeTab === tab 
-      ? 'bg-[#E6FF57] text-black shadow-lg shadow-yellow-400/20' 
-      : 'text-gray-400 hover:text-white hover:bg-white/5'}
+    const handleSessionComplete = (duration: number) => {
+        setSessions([...sessions, { id: crypto.randomUUID(), date: Date.now(), durationSeconds: duration }]);
+    };
+
+    const handleResetApp = () => {
+        if (confirm("Tem certeza? Isso apagará todos os seus dados e perfil.")) {
+            localStorage.clear();
+            window.location.reload();
+        }
+    };
+
+    const getTabClass = (tab: AppTab) => `
+    relative px-4 py-2 text-xs font-black rounded-[1rem] transition-all duration-300 flex items-center space-x-2 whitespace-nowrap
+    ${activeTab === tab
+            ? 'bg-[#FFF9C4] text-[#FB8C00] shadow-xl shadow-yellow-100/50 scale-105 border border-[#FBC02D]/30'
+            : 'text-gray-400 hover:text-black hover:bg-black/5'}
   `;
 
-  if (loading) return <SplashScreen />;
-  if (!userProfile) return <Onboarding onComplete={handleProfileCreate} />;
+    if (loading) return <SplashScreen />;
+    if (!userProfile) return <Onboarding onComplete={handleProfileCreate} />;
 
-  return (
-    <div className="flex h-screen bg-[#0F1115] overflow-hidden font-poppins animate-in fade-in duration-700">
-      <Sidebar 
-        userProfile={userProfile}
-        sources={sources} 
-        folders={folders}
-        savedItems={savedItems}
-        onAddSource={handleAddSource} 
-        onRemoveSource={handleRemoveSource}
-        onResetApp={handleResetApp}
-        onCreateFolder={handleCreateFolder}
-        onLoadItem={handleLoadItem}
-        onDeleteItem={handleDeleteItem}
-        onDeleteFolder={handleDeleteFolder}
-      />
+    return (
+        <div className="flex h-screen bg-[#FDFDFD] overflow-hidden font-poppins animate-in fade-in duration-700">
+            <Sidebar
+                userProfile={userProfile}
+                sources={sources}
+                folders={folders}
+                savedItems={savedItems}
+                onAddSource={handleAddSource}
+                onRemoveSource={handleRemoveSource}
+                onResetApp={handleResetApp}
+                onCreateFolder={handleCreateFolder}
+                onLoadItem={handleLoadItem}
+                onDeleteItem={handleDeleteItem}
+                onDeleteFolder={handleDeleteFolder}
+            />
 
-      <div className="flex-1 flex flex-col min-w-0 relative">
-        {/* Scrollable Horizontal Tabs */}
-        <div className="absolute top-6 left-6 right-6 z-20 flex justify-between items-start pointer-events-none">
-            <div className="bg-[#1C1F26] p-1.5 rounded-[2rem] shadow-2xl pointer-events-auto inline-flex border border-white/5 overflow-x-auto max-w-full no-scrollbar gap-1">
-                {/* MANAGEMENT TABS */}
-                <button onClick={() => setActiveTab(AppTab.PLANNER)} className={getTabClass(AppTab.PLANNER)}>
-                    <span>📅 PLANEJAR</span>
-                </button>
-                <button onClick={() => setActiveTab(AppTab.SYLLABUS)} className={getTabClass(AppTab.SYLLABUS)}>
-                    <span>📜 EDITAL</span>
-                </button>
-                 <button onClick={() => setActiveTab(AppTab.DASHBOARD)} className={getTabClass(AppTab.DASHBOARD)}>
-                    <span>📊 METAS</span>
-                </button>
-                
-                <div className="w-px h-6 bg-white/10 mx-1"></div>
+            <div className="flex-1 flex flex-col min-w-0 relative">
+                {/* Scrollable Horizontal Tabs */}
+                <div className="absolute top-6 left-6 right-6 z-20 flex justify-between items-start pointer-events-none">
+                    <div className="bg-white/80 backdrop-blur-md p-1.5 rounded-[2rem] shadow-xl pointer-events-auto inline-flex border border-black/5 overflow-x-auto max-w-full no-scrollbar gap-1">
+                        {/* BULLET JOURNAL NAVIGATION */}
+                        <button onClick={() => setActiveTab(AppTab.DIARIO)} className={getTabClass(AppTab.DIARIO)}>
+                            <span>📓 Diário</span>
+                        </button>
+                        <button onClick={() => setActiveTab(AppTab.SEMANAL)} className={getTabClass(AppTab.SEMANAL)}>
+                            <span>📅 Semanal</span>
+                        </button>
+                        <button onClick={() => setActiveTab(AppTab.MENSAL)} className={getTabClass(AppTab.MENSAL)}>
+                            <span>📅 Mensal</span>
+                        </button>
+                        <button onClick={() => setActiveTab(AppTab.FUTURO)} className={getTabClass(AppTab.FUTURO)}>
+                            <span>📅 Futuro</span>
+                        </button>
+                        <button onClick={() => setActiveTab(AppTab.COLECOES)} className={getTabClass(AppTab.COLECOES)}>
+                            <span>📁 Coleções</span>
+                        </button>
 
-                {/* STUDY TABS */}
-                <button onClick={() => { setActiveTab(AppTab.CHAT); setLoadedContent(null); }} className={getTabClass(AppTab.CHAT)}>
-                    <span>💬 Chat</span>
-                </button>
-                <button onClick={() => setActiveTab(AppTab.SUMMARY)} className={getTabClass(AppTab.SUMMARY)}>
-                    <span>📝 Resumo</span>
-                </button>
-                <button onClick={() => setActiveTab(AppTab.FLASHCARDS)} className={getTabClass(AppTab.FLASHCARDS)}>
-                    <span>🃏 Flash</span>
-                </button>
-                <button onClick={() => setActiveTab(AppTab.QUIZ)} className={getTabClass(AppTab.QUIZ)}>
-                    <span>❓ Quiz</span>
-                </button>
-                <button onClick={() => setActiveTab(AppTab.AUDIO)} className={getTabClass(AppTab.AUDIO)}>
-                    <span>🎧 Audio</span>
-                </button>
+                        <div className="w-px h-6 bg-black/10 mx-1"></div>
+
+                        <button onClick={() => setActiveTab(AppTab.HABITOS)} className={getTabClass(AppTab.HABITOS)}>
+                            <span>🎯 Hábitos</span>
+                        </button>
+                        <button onClick={() => setActiveTab(AppTab.HUMOR)} className={getTabClass(AppTab.HUMOR)}>
+                            <span>😊 Humor</span>
+                        </button>
+                        <button onClick={() => setActiveTab(AppTab.FINANCAS)} className={getTabClass(AppTab.FINANCAS)}>
+                            <span>💰 Finanças</span>
+                        </button>
+                        <button onClick={() => setActiveTab(AppTab.GRATIDAO)} className={getTabClass(AppTab.GRATIDAO)}>
+                            <span>🤍 Gratidão</span>
+                        </button>
+
+                        <div className="w-px h-6 bg-black/10 mx-1"></div>
+
+                        <button onClick={() => { setActiveTab(AppTab.CHAT); setLoadedContent(null); }} className={getTabClass(AppTab.CHAT)}>
+                            <span>💬 Assistente</span>
+                        </button>
+                    </div>
+                </div>
+
+                <main className="flex-1 relative overflow-hidden bg-[#FAFBFC] pt-24">
+                    <div className={`w-full bg-white rounded-tl-[3.5rem] h-full overflow-hidden border-t border-l border-black/5 shadow-2xl`}>
+                        {activeTab === AppTab.CHAT && <ChatArea sources={sources} userName={userProfile.name} />}
+                        {activeTab === AppTab.DIARIO && <BulletJournal state={bujoState} setState={setBujoState} />}
+                        {activeTab === AppTab.SEMANAL && <WeeklyLog state={bujoState} setState={setBujoState} />}
+                        {activeTab === AppTab.MENSAL && <MonthlyLog state={bujoState} setState={setBujoState} />}
+                        {activeTab === AppTab.FUTURO && <FutureLog state={bujoState} setState={setBujoState} />}
+                        {activeTab === AppTab.COLECOES && <CollectionsView state={bujoState} setState={setBujoState} />}
+                        {activeTab === AppTab.HABITOS && <HabitTracker state={bujoState} setState={setBujoState} />}
+                        {activeTab === AppTab.HUMOR && <MoodTracker state={bujoState} setState={setBujoState} />}
+                        {activeTab === AppTab.FINANCAS && <FinanceTracker state={bujoState} setState={setBujoState} />}
+                        {activeTab === AppTab.GRATIDAO && <GratitudeJournal state={bujoState} setState={setBujoState} />}
+                    </div>
+                </main>
             </div>
         </div>
-
-        <main className="flex-1 relative overflow-hidden bg-[#0F1115] pt-24">
-            <div className={`w-full bg-[#0F1115] rounded-tl-[3rem] h-full overflow-hidden`}>
-                {activeTab === AppTab.CHAT && <ChatArea sources={sources} userName={userProfile.name} />}
-                
-                {activeTab === AppTab.SUMMARY && (
-                    <SummaryView 
-                        sources={sources} 
-                        initialData={loadedContent} 
-                        folders={folders}
-                        onCreateFolder={handleCreateFolder}
-                        onSaveItem={handleSaveItem}
-                    />
-                )}
-                
-                {activeTab === AppTab.FLASHCARDS && (
-                    <FlashcardDeck 
-                        sources={sources} 
-                        initialData={loadedContent}
-                        folders={folders}
-                        onCreateFolder={handleCreateFolder}
-                        onSaveItem={handleSaveItem}
-                    />
-                )}
-                
-                {activeTab === AppTab.QUIZ && (
-                    <QuizMode 
-                        sources={sources} 
-                        initialData={loadedContent}
-                        folders={folders}
-                        onCreateFolder={handleCreateFolder}
-                        onSaveItem={handleSaveItem}
-                    />
-                )}
-                
-                {activeTab === AppTab.AUDIO && <AudioPlayer sources={sources} />}
-
-                {/* NEW VIEWS */}
-                {activeTab === AppTab.PLANNER && (
-                    <Planner 
-                        tasks={weeklyTasks} 
-                        setTasks={setWeeklyTasks}
-                        exams={examDates}
-                        setExams={setExamDates}
-                        onSessionComplete={handleSessionComplete}
-                        syllabusTopics={topics}
-                    />
-                )}
-
-                {activeTab === AppTab.SYLLABUS && (
-                    <SyllabusManager 
-                        topics={topics}
-                        setTopics={setTopics}
-                        onAddSource={handleAddSource}
-                        onSaveItem={handleSaveItem}
-                    />
-                )}
-
-                {activeTab === AppTab.DASHBOARD && (
-                    <Dashboard 
-                        sessions={sessions}
-                        mockExams={mockExams}
-                        setMockExams={setMockExams}
-                        topics={topics}
-                    />
-                )}
-            </div>
-        </main>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default App;

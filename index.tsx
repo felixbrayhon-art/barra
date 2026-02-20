@@ -1,8 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import './index.css';
 
-console.log("Index.tsx: Starting app mount...");
+console.log("Index.tsx: EXECUTION START");
+document.body.style.border = '10px solid yellow';
+document.body.style.boxSizing = 'border-box';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
