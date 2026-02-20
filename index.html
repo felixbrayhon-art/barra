@@ -1,84 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MEU BULLET</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-
-    body {
-      font-family: 'Poppins', sans-serif;
-    }
-
-    /* Dark Theme Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: #1e293b;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #475569;
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #64748b;
-    }
-
-    /* 3D Flip Card Styles */
-    .perspective-1000 {
-      perspective: 1000px;
-    }
-
-    .transform-style-3d {
-      transform-style: preserve-3d;
-    }
-
-    .backface-hidden {
-      backface-visibility: hidden;
-    }
-
-    .rotate-y-180 {
-      transform: rotateY(180deg);
-    }
-  </style>
   <link rel="stylesheet" href="/index.css">
   <script>
     window.onerror = function (msg, url, line, col, error) {
       const root = document.getElementById('root');
       if (root) {
-        root.innerHTML = '<div style="background: white; color: black; padding: 40px; font-family: sans-serif; height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center;"><div><h1 style="font-weight:900; font-size: 24px;">⚓ Erro de Carregamento</h1><p style="margin: 20px 0; color: #666;">' + msg + '</p><button onclick="location.reload()" style="background: #FB8C00; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;">Recarregar</button></div></div>';
+        root.innerHTML = '<div style="background:#000;color:#fff;padding:40px;font-family:Inter,sans-serif;height:100vh;display:flex;align-items:center;justify-content:center;text-align:center"><div><h1 style="font-weight:900;font-size:24px">Erro</h1><p style="margin:20px 0;color:#666">' + msg + '</p><button onclick="localStorage.clear();location.reload()" style="background:#fff;color:#000;border:none;padding:10px 24px;border-radius:8px;font-weight:700;cursor:pointer">Reiniciar</button></div></div>';
       }
       return false;
     };
-    console.log("HTML: Error handler initialized");
   </script>
 </head>
 
-<body class="bg-[#1a1a1a] text-white h-screen overflow-hidden selection:bg-yellow-400 selection:text-black"
-  style="background-color: #1a1a1a !important;">
-  <div id="root" class="h-full">
+<body style="background:#000; margin:0; padding:0;">
+  <div id="root" style="height:100vh">
     <div
-      style="display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; color: #E6FF57; font-family: monospace; font-weight: bold; font-size: 20px;">
-      <div id="boot-status">MEU BULLET: INICIANDO...</div>
-      <div id="boot-sub" style="font-size: 12px; margin-top: 10px; color: #475569;">SE ESTIVER VENDO ISSO, O JS AINDA
-        NÃO CARREGOU.</div>
-      <script>
-        setTimeout(function () {
-          var status = document.getElementById('boot-status');
-          if (status && status.innerText === 'SISTEMA: INICIANDO...') {
-            status.innerText = '⚓ FALHA NO MOTOR (JS)';
-            document.getElementById('boot-sub').innerHTML = 'O aplicativo demorou muito para carregar. <br><button onclick="localStorage.clear(); location.reload()" style="margin-top:10px; background:#FB8C00; color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer">Limpar Dados e Reiniciar</button>';
-          }
-        }, 5000);
-      </script>
+      style="display:flex;height:100%;align-items:center;justify-content:center;font-family:'Inter',monospace;color:#fff;font-size:20px;font-weight:900;letter-spacing:-1px">
+      MEU BULLET
     </div>
   </div>
   <script type="module" src="/index.tsx"></script>

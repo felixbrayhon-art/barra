@@ -1,141 +1,178 @@
+
 import * as React from 'react';
 import { useState } from 'react';
 import { Source, Folder, SavedItem, AppTab, UserProfile } from '../types';
 import { generateProjectContent } from '../services/geminiService';
 
 interface SidebarProps {
-    activeTab: AppTab;
-    setActiveTab: (tab: AppTab) => void;
+    userProfile: UserProfile;
     sources: Source[];
-    setSources: (sources: Source[]) => void;
     folders: Folder[];
     savedItems: SavedItem[];
-    userProfile: UserProfile | null;
+    onAddSource: (source: Source) => void;
+    onRemoveSource: (id: string) => void;
+    onResetApp: () => void;
+    onCreateFolder: (name: string) => string;
+    onLoadItem: (item: SavedItem) => void;
+    onDeleteItem: (id: string) => void;
+    onDeleteFolder: (id: string) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
-    activeTab,
-    setActiveTab,
+    userProfile,
     sources,
-    setSources,
-    userProfile
+    folders,
+    savedItems,
+    onAddSource,
+    onRemoveSource,
+    onResetApp,
+    onCreateFolder,
+    onLoadItem,
+    onDeleteItem,
+    onDeleteFolder,
 }) => {
-    const [newProjectName, setNewProjectName] = useState('');
     const [isCreating, setIsCreating] = useState(false);
+    const [projectName, setProjectName] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleCreateProject = async () => {
-        if (!newProjectName.trim()) return;
-        setIsCreating(true);
+    const handleCreate = async () => {
+        if (!projectName.trim()) return;
+        setIsLoading(true);
         try {
-            const content = await generateProjectContent(newProjectName);
-            const newProject: Source = {
+            const content = await generateProjectContent(projectName);
+            const newSource: Source = {
                 id: crypto.randomUUID(),
-                title: newProjectName,
-                content: content,
+                title: projectName,
+                content,
                 type: 'text',
-                createdAt: Date.now()
+                createdAt: Date.now(),
             };
-            setSources([...sources, newProject]);
-            setNewProjectName('');
-        } catch (error) {
-            console.error(error);
-        } finally {
+            onAddSource(newSource);
+            setProjectName('');
             setIsCreating(false);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const navItems = [
-        { id: AppTab.DIARIO, label: 'Bullet Journal', icon: '📓' },
-        { id: AppTab.SEMANAL, label: 'Weekly Log', icon: '📅' },
-        { id: AppTab.MENSAL, label: 'Monthly Log', icon: '🗓️' },
-        { id: AppTab.FUTURO, label: 'Future Log', icon: '🚀' },
-        { id: AppTab.HABITOS, label: 'Habit Tracker', icon: '🎯' },
-        { id: AppTab.HUMOR, label: 'Mood Tracker', icon: '✨' },
-        { id: AppTab.FINANCAS, label: 'Finance', icon: '💰' },
-        { id: AppTab.CHAT, label: 'Assistant', icon: '💬' },
-    ];
-
     return (
-        <div className="w-72 bg-white border-r border-zinc-200 flex flex-col h-full flex-shrink-0 z-30 font-inter">
-            {/* Header Branding */}
-            <div className="p-8 pb-6">
-                <div className="flex flex-col space-y-1 mb-8">
-                    <h1 className="text-xl font-bold tracking-tight text-zinc-900">
-                        MEU <span className="text-indigo-600">BULLET</span>
-                    </h1>
-                    <p className="text-[10px] font-medium text-zinc-400 uppercase tracking-widest">Minimalist Productivity</p>
-                </div>
-
-                {/* User Profile Mini */}
-                <div className="flex items-center gap-3 p-3 bg-zinc-50 rounded-lg border border-zinc-100">
-                    <div className="w-8 h-8 rounded-full bg-zinc-200 flex items-center justify-center text-xs font-bold text-zinc-600">
-                        {userProfile?.name?.charAt(0) || 'U'}
+        <div style={{
+            width: 280, background: '#000', color: '#fff', display: 'flex',
+            flexDirection: 'column', height: '100%', flexShrink: 0,
+            borderRight: '1px solid #222', fontFamily: "'Inter', sans-serif"
+        }}>
+            {/* Header */}
+            <div style={{ padding: '32px 24px 16px' }}>
+                <h1 style={{ fontSize: 24, fontWeight: 900, letterSpacing: -1, margin: 0 }}>
+                    MEU <span style={{ color: '#999' }}>BULLET</span>
+                </h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16, paddingBottom: 16, borderBottom: '1px solid #222' }}>
+                    <div style={{
+                        width: 32, height: 32, borderRadius: '50%', background: '#222',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 14, fontWeight: 700
+                    }}>
+                        {userProfile.name.charAt(0).toUpperCase()}
                     </div>
-                    <div className="flex flex-col">
-                        <span className="text-xs font-semibold text-zinc-900 leading-none">{userProfile?.name || 'User'}</span>
-                        <span className="text-[10px] text-zinc-500 mt-1">Free Plan</span>
-                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: '#aaa' }}>{userProfile.name}</span>
                 </div>
             </div>
 
-            {/* Navigation */}
-            <div className="flex-1 overflow-y-auto px-4 no-scrollbar">
-                <nav className="space-y-1 mb-10">
-                    <p className="px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3">Workspace</p>
-                    {navItems.map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => setActiveTab(item.id)}
-                            className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === item.id
-                                    ? 'bg-zinc-900 text-white shadow-sm'
-                                    : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'
-                                }`}
-                        >
-                            <span className="opacity-80">{item.icon}</span>
-                            <span>{item.label}</span>
-                        </button>
-                    ))}
-                </nav>
-
-                {/* Projects Section */}
-                <div className="space-y-1 mb-10">
-                    <div className="px-4 flex items-center justify-between mb-3">
-                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Collections</p>
-                        <button className="text-zinc-400 hover:text-indigo-600">
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"></path></svg>
-                        </button>
-                    </div>
-                    <div className="space-y-0.5">
-                        {sources.map((source) => (
+            {/* New Project */}
+            <div style={{ padding: '0 24px', marginBottom: 16 }}>
+                {!isCreating ? (
+                    <button
+                        onClick={() => setIsCreating(true)}
+                        style={{
+                            width: '100%', padding: '10px 16px', background: '#fff', color: '#000',
+                            border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 13,
+                            cursor: 'pointer', transition: 'opacity 0.2s'
+                        }}
+                        onMouseOver={e => (e.currentTarget.style.opacity = '0.8')}
+                        onMouseOut={e => (e.currentTarget.style.opacity = '1')}
+                    >
+                        + Novo Projeto
+                    </button>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <input
+                            value={projectName}
+                            onChange={e => setProjectName(e.target.value)}
+                            placeholder="Nome do projeto..."
+                            style={{
+                                padding: '8px 12px', background: '#111', color: '#fff',
+                                border: '1px solid #333', borderRadius: 8, fontSize: 13, outline: 'none'
+                            }}
+                            onKeyDown={e => e.key === 'Enter' && handleCreate()}
+                            autoFocus
+                        />
+                        <div style={{ display: 'flex', gap: 6 }}>
                             <button
-                                key={source.id}
-                                className="w-full text-left px-4 py-2 rounded-lg text-xs font-medium text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 transition-colors flex items-center space-x-2"
+                                onClick={handleCreate}
+                                disabled={isLoading}
+                                style={{
+                                    flex: 1, padding: '8px', background: '#fff', color: '#000',
+                                    border: 'none', borderRadius: 6, fontWeight: 700, fontSize: 12,
+                                    cursor: 'pointer', opacity: isLoading ? 0.5 : 1
+                                }}
                             >
-                                <span className="w-1 h-1 bg-zinc-300 rounded-full"></span>
-                                <span className="truncate">{source.title}</span>
+                                {isLoading ? '...' : 'Criar'}
                             </button>
-                        ))}
+                            <button
+                                onClick={() => { setIsCreating(false); setProjectName(''); }}
+                                style={{
+                                    padding: '8px 12px', background: '#222', color: '#888',
+                                    border: 'none', borderRadius: 6, fontSize: 12, cursor: 'pointer'
+                                }}
+                            >
+                                ✕
+                            </button>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
-            {/* Bottom Actions */}
-            <div className="p-4 border-t border-zinc-100 bg-zinc-50/50">
-                <div className="relative">
-                    <input
-                        type="text"
-                        placeholder="New project..."
-                        value={newProjectName}
-                        onChange={(e) => setNewProjectName(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleCreateProject()}
-                        className="w-full bg-white border border-zinc-200 rounded-lg px-4 py-2.5 text-xs focus:outline-none focus:border-indigo-500 transition-colors shadow-sm"
-                    />
-                    {isCreating && (
-                        <div className="absolute right-3 top-2.5">
-                            <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                        </div>
-                    )}
-                </div>
+            {/* Projects List */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px' }}>
+                <p style={{ fontSize: 10, fontWeight: 700, color: '#555', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12 }}>
+                    Projetos ({sources.length})
+                </p>
+                {sources.length === 0 && (
+                    <p style={{ fontSize: 12, color: '#444', fontStyle: 'italic' }}>Nenhum projeto ainda.</p>
+                )}
+                {sources.map(s => (
+                    <div key={s.id} style={{
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        padding: '10px 12px', borderRadius: 8, marginBottom: 4,
+                        background: '#111', cursor: 'default'
+                    }}>
+                        <span style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                            {s.title}
+                        </span>
+                        <button
+                            onClick={() => onRemoveSource(s.id)}
+                            style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', fontSize: 14, padding: '0 4px' }}
+                        >
+                            ✕
+                        </button>
+                    </div>
+                ))}
+            </div>
+
+            {/* Footer */}
+            <div style={{ padding: '16px 24px', borderTop: '1px solid #222' }}>
+                <button
+                    onClick={onResetApp}
+                    style={{
+                        width: '100%', padding: '8px', background: 'transparent', color: '#555',
+                        border: '1px solid #333', borderRadius: 8, fontSize: 11, cursor: 'pointer',
+                        fontWeight: 600
+                    }}
+                >
+                    Redefinir App
+                </button>
             </div>
         </div>
     );

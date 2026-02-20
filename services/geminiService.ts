@@ -1,42 +1,35 @@
+import { Source, ChatMessage, SyllabusTopic, WeeklyTask } from "../types";
 
-import { Source, ChatMessage, Flashcard, QuizQuestion, SyllabusTopic, WeeklyTask } from "../types";
-
-// --- LOCAL MOCK SERVICES (No API Key Required) ---
+// Local mock services — no API key required
 
 export const generateProjectContent = async (project: string): Promise<string> => {
-  return `### Guia de Planejamento: ${project}\n\n1. **Objetivo**: Definir metas claras para ${project}.\n2. **Ações**: Quebrar em pequenas tarefas diárias.\n3. **Notas**: Use o Bullet Journal para rastrear o progresso.\n\n*Nota: O assistente está operando em modo offline.*`;
+    return `### ${project}\n\n1. **Objetivo**: Definir metas claras.\n2. **Ações**: Quebrar em pequenas tarefas diárias.\n3. **Notas**: Use o Bullet Journal para acompanhar.`;
 };
 
 export const generateChatResponse = async (
-  query: string,
-  sources: Source[],
-  history: ChatMessage[]
+    query: string,
+    sources: Source[],
+    history: ChatMessage[]
 ): Promise<string> => {
-  const lowerQuery = query.toLowerCase();
-
-  if (lowerQuery.includes("oi") || lowerQuery.includes("olá") || lowerQuery.includes("bom dia")) {
-    return "Olá! Sou seu assistente de produtividade local. Como posso ajudar você a organizar seu Bullet Journal hoje?";
-  }
-
-  if (lowerQuery.includes("ajuda") || lowerQuery.includes("como usar")) {
-    return "Você pode usar as abas acima para planejar seu dia, semana e mês. O Bullet Journal (📓 Diário) é o coração do app!";
-  }
-
-  return "Entendi! Como estamos no modo offline (sem chave de API), minhas respostas são limitadas, mas você pode continuar usando todas as ferramentas de planejamento normalmente.";
+    const lower = query.toLowerCase();
+    if (lower.includes("oi") || lower.includes("olá")) {
+        return "Olá! Como posso ajudar com sua organização hoje?";
+    }
+    return "Entendi. Estamos no modo offline, mas você pode usar todas as ferramentas de planejamento normalmente.";
 };
 
 export const generateSummary = async (sources: Source[]): Promise<string> => {
-  return "Resumo offline: Você tem " + sources.length + " projetos ativos no momento.";
+    return "Resumo: Você tem " + sources.length + " projetos ativos.";
 };
 
 export const generateWeeklyPlan = async (topics: SyllabusTopic[], availableTime: string): Promise<WeeklyTask[]> => {
-  const days = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
-  return days.map(day => ({
-    id: crypto.randomUUID(),
-    day,
-    task: "Tarefa planejada para " + day,
-    completed: false
-  }));
+    const days = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+    return days.map(day => ({
+        id: crypto.randomUUID(),
+        day,
+        task: "Tarefa para " + day,
+        completed: false
+    }));
 };
 
 export const generateFlashcards = async () => [];

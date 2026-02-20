@@ -1,28 +1,39 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export const SplashScreen: React.FC = () => {
-  useEffect(() => { console.log("SplashScreen.tsx: Component mounted"); }, []);
-  return (
-    <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-50 overflow-hidden font-inter">
-      <div className="relative z-10 flex flex-col items-center animate-in fade-in duration-1000">
-        {/* Minimalist Logo */}
-        <div className="relative mb-6">
-          <h1 className="text-4xl font-black text-zinc-900 tracking-tighter">
-            MEU <span className="text-zinc-200">BULLET</span>
-          </h1>
-          <div className="absolute -right-4 -top-1 w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></div>
-        </div>
+    const [progress, setProgress] = useState(0);
 
-        {/* Loading Indicator */}
-        <div className="flex items-center space-x-1.5 mt-2">
-          <div className="w-1.5 h-1.5 bg-zinc-200 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-1.5 h-1.5 bg-zinc-200 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-1.5 h-1.5 bg-zinc-200 rounded-full animate-bounce"></div>
-        </div>
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setProgress(p => Math.min(p + Math.random() * 30, 100));
+        }, 300);
+        return () => clearInterval(interval);
+    }, []);
 
-        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.4em] mt-8">Minimalist Productivity</p>
-      </div>
-    </div>
-  );
+    return (
+        <div style={{
+            position: 'fixed', inset: 0, background: '#000', display: 'flex',
+            flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            fontFamily: "'Inter', sans-serif", zIndex: 50
+        }}>
+            {/* Logo */}
+            <div style={{ marginBottom: 48, textAlign: 'center' }}>
+                <h1 style={{ fontSize: 56, fontWeight: 900, color: '#fff', letterSpacing: -3, margin: 0 }}>
+                    MEU BULLET
+                </h1>
+                <p style={{ fontSize: 11, fontWeight: 500, color: '#666', letterSpacing: 6, textTransform: 'uppercase', marginTop: 12 }}>
+                    Organização pessoal
+                </p>
+            </div>
+
+            {/* Progress Bar */}
+            <div style={{ width: 200, height: 2, background: '#333', borderRadius: 1, overflow: 'hidden' }}>
+                <div style={{
+                    width: `${progress}%`, height: '100%', background: '#fff',
+                    transition: 'width 0.3s ease-out'
+                }} />
+            </div>
+        </div>
+    );
 };
