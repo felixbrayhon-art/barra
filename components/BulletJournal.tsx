@@ -132,7 +132,7 @@ export const BulletJournal: React.FC<BulletJournalProps> = ({ state, setState })
                 </div>
 
                 <div className="flex-1">
-                    <h2 className="text-3xl font-black text-black mb-8">Bullet da <span className="text-blue-600">RA</span></h2>
+                    <h2 className="text-3xl font-black text-black mb-8">MEU <span className="text-blue-600">BULLET</span></h2>
 
                     <div className="bujo-paper rounded-[2.5rem] min-h-[700px] shadow-2xl p-8 md:p-12 flex flex-col relative overflow-hidden text-gray-800 border-8 border-[#f0ede6]">
                         {/* Header */}

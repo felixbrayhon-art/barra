@@ -74,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         </svg>
                     </div>
                     <h1 className="text-2xl font-black tracking-tight text-black">
-                        Bullet da <span className="text-[#FB8C00]">RA</span>
+                        MEU <span className="text-[#FB8C00]">BULLET</span>
                     </h1>
                 </div>
                 <div className="flex items-center gap-3 pl-1 mt-3">

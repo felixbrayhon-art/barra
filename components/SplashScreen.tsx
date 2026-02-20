@@ -33,7 +33,7 @@ export const SplashScreen: React.FC = () => {
         {/* Loading Text */}
         <div className="space-y-4 text-center">
           <h1 className="text-6xl font-black text-gray-900 tracking-tighter">
-            Bullet da <span className="text-[#FFB74D]">RA</span>
+            MEU <span className="text-[#FFB74D]">BULLET</span>
           </h1>
 
           <div className="flex items-center justify-center space-x-2 mt-6">
