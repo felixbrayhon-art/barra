@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { useState } from 'react';
 import { BulletJournalState, BulletEntry, BulletType } from '../types';
@@ -13,215 +12,131 @@ export const BulletJournal: React.FC<BulletJournalProps> = ({ state, setState })
     const [activeDate, setActiveDate] = useState(new Date().toISOString().split('T')[0]);
     const [inputText, setInputText] = useState('');
     const [selectedType, setSelectedType] = useState<BulletType>('task');
-    const [activeCollectionId, setActiveCollectionId] = useState<string | null>(null);
 
     const addEntry = () => {
         if (!inputText.trim()) return;
-
         const newEntry: BulletEntry = {
             id: crypto.randomUUID(),
             type: selectedType,
             text: inputText,
-            date: activeDate,
-            collectionId: activeCollectionId || undefined,
+            date: activeDate
         };
-
-        setState({
-            ...state,
-            entries: [...state.entries, newEntry],
-        });
+        setState({ ...state, entries: [newEntry, ...state.entries] });
         setInputText('');
     };
 
-    const toggleStatus = (id: string, currentType: BulletType) => {
-        let nextType: BulletType = currentType;
-        if (currentType === 'task') nextType = 'completed';
-        else if (currentType === 'completed') nextType = 'migrated';
-        else if (currentType === 'migrated') nextType = 'cancelled';
-        else if (currentType === 'cancelled') nextType = 'task';
-
-        setState({
-            ...state,
-            entries: state.entries.map(e => e.id === id ? { ...e, type: nextType } : e),
+    const toggleStatus = (id: string) => {
+        const newEntries = state.entries.map(entry => {
+            if (entry.id === id) {
+                const nextType: Record<BulletType, BulletType> = {
+                    'task': 'completed',
+                    'completed': 'migrated',
+                    'migrated': 'cancelled',
+                    'cancelled': 'note',
+                    'note': 'event',
+                    'event': 'task'
+                };
+                return { ...entry, type: nextType[entry.type] || 'task' };
+            }
+            return entry;
         });
+        setState({ ...state, entries: newEntries });
     };
 
-    const filteredEntries = state.entries.filter(e =>
-        activeCollectionId
-            ? e.collectionId === activeCollectionId
-            : (e.date === activeDate && !e.collectionId)
-    );
-
-    const addCollection = () => {
-        const name = prompt("Nome da nova coleção:");
-        if (!name) return;
-        const newCol = { id: crypto.randomUUID(), name };
-        setState({ ...state, collections: [...state.collections, newCol] });
-    };
-
-    const getBulletIcon = (type: BulletType) => {
-        switch (type) {
-            case 'task': return <div className="bullet-task" />;
-            case 'note': return <div className="bullet-note" />;
-            case 'event': return <div className="bullet-event" />;
-            case 'completed': return (
-                <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-            );
-            case 'migrated': return (
-                <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                </svg>
-            );
-            case 'cancelled': return (
-                <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            );
-            default: return <div className="bullet-dot" />;
-        }
-    };
+    const filteredEntries = state.entries.filter(e => e.date === activeDate);
 
     return (
-        <div className="flex flex-col h-full bg-[#FAFBFC] overflow-y-auto p-6 md:p-10 pb-32">
-            <div className="max-w-5xl mx-auto w-full flex flex-col md:flex-row gap-8">
+        <div className="flex-1 bg-white flex flex-col h-full font-inter overflow-hidden">
+            <div className="max-w-4xl mx-auto w-full flex flex-col h-full px-8 py-12">
 
-                {/* Sidebar Collections */}
-                <div className="w-full md:w-48 flex-shrink-0 pt-6 md:pt-20">
-                    <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-4">Coleções</h3>
-                    <div className="space-y-2">
-                        <button
-                            onClick={() => setActiveCollectionId(null)}
-                            className={`w-full text-left px-4 py-2 rounded-xl text-sm font-bold transition-all ${!activeCollectionId ? 'bg-[#FFF9C4] text-[#FB8C00] shadow-sm border border-[#FBC02D]/30' : 'text-gray-400 hover:text-black'}`}
+                {/* Header */}
+                <div className="flex items-end justify-between mb-12 border-b border-zinc-100 pb-8">
+                    <div>
+                        <h1 className="text-3xl font-extrabold text-zinc-900 tracking-tight">
+                            DIÁRIO <span className="text-zinc-400 font-medium">/ {new Date(activeDate).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })}</span>
+                        </h1>
+                        <p className="text-sm text-zinc-500 mt-1 font-medium italic">Capture seus pensamentos e ações.</p>
+                    </div>
+                    <div className="flex gap-2">
+                        <input
+                            type="date"
+                            value={activeDate}
+                            onChange={(e) => setActiveDate(e.target.value)}
+                            className="text-xs font-bold bg-zinc-50 border border-zinc-200 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500 transition-colors"
+                        />
+                    </div>
+                </div>
+
+                {/* Input Area */}
+                <div className="mb-10 group">
+                    <div className="flex items-center space-x-4 bg-zinc-50 border border-zinc-200 rounded-xl p-2 focus-within:border-zinc-400 focus-within:bg-white transition-all shadow-sm">
+                        <select
+                            value={selectedType}
+                            onChange={(e) => setSelectedType(e.target.value as BulletType)}
+                            className="bg-zinc-100 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg border-none focus:ring-0 cursor-pointer hover:bg-zinc-200 transition-colors"
                         >
-                            📅 Diário
-                        </button>
-                        {state.collections.map(col => (
-                            <button
-                                key={col.id}
-                                onClick={() => setActiveCollectionId(col.id)}
-                                className={`w-full text-left px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeCollectionId === col.id ? 'bg-black text-[#E6FF57]' : 'text-gray-400 hover:text-black'} group flex justify-between items-center`}
-                            >
-                                <span className="truncate">{col.name}</span>
-                                <span
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (confirm("Excluir coleção?")) {
-                                            setState({
-                                                ...state,
-                                                collections: state.collections.filter(c => c.id !== col.id),
-                                                entries: state.entries.filter(en => en.collectionId !== col.id)
-                                            });
-                                            if (activeCollectionId === col.id) setActiveCollectionId(null);
-                                        }
-                                    }}
-                                    className="p-1 opacity-0 group-hover:opacity-100 text-red-400 hover:scale-110"
-                                >
-                                    ×
-                                </span>
-                            </button>
-                        ))}
+                            <option value="task">Tarefa</option>
+                            <option value="note">Nota</option>
+                            <option value="event">Evento</option>
+                        </select>
+                        <input
+                            type="text"
+                            placeholder="O que está em sua mente?"
+                            value={inputText}
+                            onChange={(e) => setInputText(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && addEntry()}
+                            className="flex-1 bg-transparent border-none focus:ring-0 text-sm placeholder:text-zinc-400 font-medium"
+                        />
                         <button
-                            onClick={addCollection}
-                            className="w-full text-left px-4 py-2 rounded-xl text-sm font-bold text-gray-600 hover:text-gray-400 border border-dashed border-gray-800 mt-4"
+                            onClick={addEntry}
+                            className="w-8 h-8 flex items-center justify-center bg-zinc-900 text-white rounded-lg hover:bg-indigo-600 transition-colors"
                         >
-                            + Nova Coleção
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg>
                         </button>
                     </div>
                 </div>
 
-                <div className="flex-1">
-                    <h2 className="text-3xl font-black text-black mb-8">MEU <span className="text-blue-600">BULLET</span></h2>
-
-                    <div className="bujo-paper rounded-[2.5rem] min-h-[700px] shadow-2xl p-8 md:p-12 flex flex-col relative overflow-hidden text-gray-800 border-8 border-[#f0ede6]">
-                        {/* Header */}
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 z-10">
-                            <div className="flex flex-col">
-                                {activeCollectionId ? (
-                                    <h3 className="text-2xl font-black text-gray-900 px-2">{state.collections.find(c => c.id === activeCollectionId)?.name}</h3>
-                                ) : (
-                                    <input
-                                        type="date"
-                                        value={activeDate}
-                                        onChange={(e) => setActiveDate(e.target.value)}
-                                        className="bg-transparent text-2xl font-black border-none focus:outline-none text-gray-900 cursor-pointer hover:bg-black/5 rounded-lg px-2"
-                                    />
-                                )}
-                                <span className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] ml-2">
-                                    {activeCollectionId ? 'Collection' : 'Daily Log'}
-                                </span>
-                            </div>
-
-                            <div className="flex gap-1 md:gap-2 bg-black/5 p-1 rounded-[2rem]">
-                                {(['task', 'note', 'event'] as BulletType[]).map(type => (
-                                    <button
-                                        key={type}
-                                        onClick={() => setSelectedType(type)}
-                                        className={`px-3 md:px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${selectedType === type ? 'bg-white text-black shadow-md' : 'text-gray-500 hover:text-gray-800'}`}
-                                    >
-                                        {type}
-                                    </button>
-                                ))}
-                            </div>
+                {/* Bullet List */}
+                <div className="flex-1 overflow-y-auto pr-4 no-scrollbar">
+                    {filteredEntries.length === 0 ? (
+                        <div className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-zinc-100 rounded-2xl">
+                            <span className="text-3xl mb-2">✨</span>
+                            <p className="text-xs font-bold text-zinc-300 uppercase tracking-widest">Nada planejado ainda</p>
                         </div>
-
-                        {/* Input Area */}
-                        <div className="mb-12 z-10">
-                            <div className="flex items-center gap-4 group">
-                                <div className="w-8 flex justify-center">
-                                    {getBulletIcon(selectedType)}
-                                </div>
-                                <input
-                                    value={inputText}
-                                    onChange={(e) => setInputText(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && addEntry()}
-                                    placeholder="Escreva algo..."
-                                    className="flex-1 bg-transparent border-none text-xl font-medium focus:outline-none placeholder:text-gray-300"
-                                />
-                            </div>
-                            <div className="h-0.5 bg-gray-100 mt-2 w-full"></div>
-                        </div>
-
-                        {/* Entries */}
-                        <div className="flex-1 space-y-4 z-10">
-                            {filteredEntries.map(entry => (
+                    ) : (
+                        <div className="space-y-1">
+                            {filteredEntries.map((entry) => (
                                 <div
                                     key={entry.id}
-                                    className="bujo-entry group"
-                                    onClick={() => ['task', 'completed', 'migrated', 'cancelled'].includes(entry.type) && toggleStatus(entry.id, entry.type)}
+                                    onClick={() => toggleStatus(entry.id)}
+                                    className="flex items-start group cursor-pointer hover:bg-zinc-50 p-3 rounded-lg transition-colors border-b border-zinc-50 last:border-0"
                                 >
-                                    <div className="w-8 flex justify-center flex-shrink-0">
-                                        {getBulletIcon(entry.type)}
+                                    <div className="mt-1.5 mr-4 flex-shrink-0">
+                                        {entry.type === 'task' && <div className="w-1.5 h-1.5 bg-zinc-300 rounded-full group-hover:bg-zinc-900" />}
+                                        {entry.type === 'completed' && <div className="w-3 h-3 flex items-center justify-center bg-indigo-500 text-white rounded-sm"><svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" /></svg></div>}
+                                        {entry.type === 'note' && <div className="w-2 h-0.5 bg-indigo-400 rounded-full" />}
+                                        {entry.type === 'event' && <div className="w-2 h-2 border border-zinc-400 rounded-full" />}
+                                        {entry.type === 'migrated' && <div className="w-3 h-3 text-indigo-500"><svg className="w-full h-full" fill="currentColor" viewBox="0 0 20 20"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" /></svg></div>}
+                                        {entry.type === 'cancelled' && <div className="w-1.5 h-1.5 bg-zinc-200 rounded-full line-through" />}
                                     </div>
-                                    <span className={`text-lg transition-all ${['completed', 'cancelled'].includes(entry.type) ? 'text-gray-400 line-through' : 'text-gray-800'}`}>
+                                    <span className={`text-sm font-medium ${entry.type === 'completed' ? 'text-zinc-400 line-through decoration-zinc-300' : 'text-zinc-700'}`}>
                                         {entry.text}
                                     </span>
-
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setState({ ...state, entries: state.entries.filter(i => i.id !== entry.id) });
-                                        }}
-                                        className="ml-auto opacity-0 group-hover:opacity-100 p-2 text-gray-400 hover:text-red-500 transition-opacity"
-                                    >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                                    </button>
+                                    <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">{entry.type}</span>
+                                    </div>
                                 </div>
                             ))}
-
-                            {filteredEntries.length === 0 && (
-                                <div className="flex flex-col items-center justify-center py-20 opacity-20">
-                                    <svg className="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                    <p className="text-sm font-bold uppercase tracking-widest">Nada planejado ainda</p>
-                                </div>
-                            )}
                         </div>
+                    )}
+                </div>
 
-                        {/* Grid Paper Texture Overlay */}
-                        <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]"></div>
+                {/* Footer Insight */}
+                <div className="mt-8 p-6 bg-indigo-50/30 rounded-2xl border border-indigo-100/50 flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-xl">💡</div>
+                    <div>
+                        <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1">Dica de Produtividade</p>
+                        <p className="text-xs text-indigo-900/60 font-medium">Use '.' para tarefas rápidas, '-' para notas e {'\u003E'} para migrar para amanhã.</p>
                     </div>
                 </div>
             </div>

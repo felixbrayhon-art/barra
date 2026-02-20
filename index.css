@@ -1,28 +1,85 @@
-/* Main CSS file */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-    --pastel-white: #FFFFFF;
-    --pastel-yellow: #FFF9C4;
-    --pastel-orange: #FFE0B2;
-    --pastel-green: #C8E6C9;
-    --pastel-yellow-dark: #FBC02D;
-    --pastel-orange-dark: #FB8C00;
-    --pastel-green-dark: #43A047;
-    --bg-main: #FAFBFC;
+    --bg-primary: #ffffff;
+    --bg-secondary: #fafafa;
+    --text-primary: #18181b;
+    --text-secondary: #71717a;
+    --accent: #4f46e5;
+    --accent-light: #eef2ff;
+    --border: #e4e4e7;
+    --radius: 0.5rem;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--bg-main);
-    color: #2D3436;
-    transition: background-color 0.5s ease;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-#root {
-    height: 100vh;
+/* Base Styles */
+.card-clean {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
+}
+
+.card-clean:hover {
+    border-color: var(--text-secondary);
+}
+
+.btn-primary {
+    background: var(--text-primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+/* Custom transitions */
+.page-fade-enter {
+    opacity: 0;
+}
+
+.page-fade-enter-active {
+    opacity: 1;
+    transition: opacity 200ms ease-in;
+}
+
+/* Hide scrollbars but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Markdown styling */
+.prose-clean h1,
+.prose-clean h2,
+.prose-clean h3 {
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 1rem;
+}
+
+.prose-clean p {
+    color: var(--text-secondary);
+    line-height: 1.6;
 }

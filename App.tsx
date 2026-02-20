@@ -150,77 +150,51 @@ function App() {
     console.log("App.tsx: State - loading:", loading, "userProfile:", !!userProfile, "activeTab:", activeTab);
 
     const getTabClass = (tab: AppTab) => `
-    relative px-4 py-2 text-xs font-black rounded-[1rem] transition-all duration-300 flex items-center space-x-2 whitespace-nowrap
+    relative px-5 py-2 text-[11px] font-bold uppercase tracking-widest rounded-lg transition-all duration-200 flex items-center whitespace-nowrap
     ${activeTab === tab
-            ? 'bg-[#FFF9C4] text-[#FB8C00] shadow-xl shadow-yellow-100/50 scale-105 border border-[#FBC02D]/30'
-            : 'text-gray-400 hover:text-black hover:bg-black/5'}
+            ? 'bg-zinc-900 text-white shadow-md shadow-zinc-200'
+            : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100'}
   `;
 
     if (loading) return <SplashScreen />;
     if (!userProfile) return <Onboarding onComplete={handleProfileCreate} />;
 
     return (
-        <div className="flex h-screen bg-[#FDFDFD] overflow-hidden font-poppins animate-in fade-in duration-700">
+        <div className="flex h-screen bg-white overflow-hidden font-inter animate-in fade-in duration-500">
             <Sidebar
-                userProfile={userProfile}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
                 sources={sources}
+                setSources={setSources}
                 folders={folders}
                 savedItems={savedItems}
-                onAddSource={handleAddSource}
-                onRemoveSource={handleRemoveSource}
-                onResetApp={handleResetApp}
-                onCreateFolder={handleCreateFolder}
-                onLoadItem={handleLoadItem}
-                onDeleteItem={handleDeleteItem}
-                onDeleteFolder={handleDeleteFolder}
+                userProfile={userProfile}
             />
 
-            <div className="flex-1 flex flex-col min-w-0 relative">
-                {/* Scrollable Horizontal Tabs */}
-                <div className="absolute top-6 left-6 right-6 z-20 flex justify-between items-start pointer-events-none">
-                    <div className="bg-white/80 backdrop-blur-md p-1.5 rounded-[2rem] shadow-xl pointer-events-auto inline-flex border border-black/5 overflow-x-auto max-w-full no-scrollbar gap-1">
-                        {/* BULLET JOURNAL NAVIGATION */}
-                        <button onClick={() => setActiveTab(AppTab.DIARIO)} className={getTabClass(AppTab.DIARIO)}>
-                            <span>📓 Diário</span>
-                        </button>
-                        <button onClick={() => setActiveTab(AppTab.SEMANAL)} className={getTabClass(AppTab.SEMANAL)}>
-                            <span>📅 Semanal</span>
-                        </button>
-                        <button onClick={() => setActiveTab(AppTab.MENSAL)} className={getTabClass(AppTab.MENSAL)}>
-                            <span>📅 Mensal</span>
-                        </button>
-                        <button onClick={() => setActiveTab(AppTab.FUTURO)} className={getTabClass(AppTab.FUTURO)}>
-                            <span>📅 Futuro</span>
-                        </button>
-                        <button onClick={() => setActiveTab(AppTab.COLECOES)} className={getTabClass(AppTab.COLECOES)}>
-                            <span>📁 Coleções</span>
-                        </button>
-
-                        <div className="w-px h-6 bg-black/10 mx-1"></div>
-
-                        <button onClick={() => setActiveTab(AppTab.HABITOS)} className={getTabClass(AppTab.HABITOS)}>
-                            <span>🎯 Hábitos</span>
-                        </button>
-                        <button onClick={() => setActiveTab(AppTab.HUMOR)} className={getTabClass(AppTab.HUMOR)}>
-                            <span>😊 Humor</span>
-                        </button>
-                        <button onClick={() => setActiveTab(AppTab.FINANCAS)} className={getTabClass(AppTab.FINANCAS)}>
-                            <span>💰 Finanças</span>
-                        </button>
-                        <button onClick={() => setActiveTab(AppTab.GRATIDAO)} className={getTabClass(AppTab.GRATIDAO)}>
-                            <span>🤍 Gratidão</span>
-                        </button>
-
-                        <div className="w-px h-6 bg-black/10 mx-1"></div>
-
-                        <button onClick={() => { setActiveTab(AppTab.CHAT); setLoadedContent(null); }} className={getTabClass(AppTab.CHAT)}>
-                            <span>💬 Assistente</span>
-                        </button>
+            <div className="flex-1 flex flex-col min-w-0 bg-white">
+                {/* Minimalist Top Navigation */}
+                <header className="h-20 border-b border-zinc-100 flex items-center px-10 justify-between bg-white z-20">
+                    <div className="flex items-center space-x-1 no-scrollbar overflow-x-auto">
+                        <button onClick={() => setActiveTab(AppTab.DIARIO)} className={getTabClass(AppTab.DIARIO)}>Diário</button>
+                        <button onClick={() => setActiveTab(AppTab.SEMANAL)} className={getTabClass(AppTab.SEMANAL)}>Semana</button>
+                        <button onClick={() => setActiveTab(AppTab.MENSAL)} className={getTabClass(AppTab.MENSAL)}>Mês</button>
+                        <button onClick={() => setActiveTab(AppTab.FUTURO)} className={getTabClass(AppTab.FUTURO)}>Futuro</button>
+                        <div className="w-px h-4 bg-zinc-200 mx-2"></div>
+                        <button onClick={() => setActiveTab(AppTab.HABITOS)} className={getTabClass(AppTab.HABITOS)}>Hábitos</button>
+                        <button onClick={() => setActiveTab(AppTab.HUMOR)} className={getTabClass(AppTab.HUMOR)}>Humor</button>
+                        <button onClick={() => setActiveTab(AppTab.FINANCAS)} className={getTabClass(AppTab.FINANCAS)}>Finanças</button>
+                        <div className="w-px h-4 bg-zinc-200 mx-2"></div>
+                        <button onClick={() => setActiveTab(AppTab.CHAT)} className={getTabClass(AppTab.CHAT)}>Assistant</button>
                     </div>
-                </div>
 
-                <main className="flex-1 relative overflow-hidden bg-[#FAFBFC] pt-24">
-                    <div className={`w-full bg-white rounded-tl-[3.5rem] h-full overflow-hidden border-t border-l border-black/5 shadow-2xl`}>
+                    <button onClick={handleResetApp} className="p-2 text-zinc-300 hover:text-red-400 transition-colors">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                </header>
+
+                <main className="flex-1 relative overflow-hidden bg-zinc-50/30">
+                    {/* Main Content Area */}
+                    <div className="h-full w-full overflow-hidden">
                         {activeTab === AppTab.CHAT && <ChatArea sources={sources} userName={userProfile.name} />}
                         {activeTab === AppTab.DIARIO && <BulletJournal state={bujoState} setState={setBujoState} />}
                         {activeTab === AppTab.SEMANAL && <WeeklyLog state={bujoState} setState={setBujoState} />}
