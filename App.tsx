@@ -4,7 +4,7 @@ import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/ChatArea';
 import { SplashScreen } from './components/SplashScreen';
 import { Onboarding } from './components/Onboarding';
-import { BulletJournal } from './components/BulletJournal.tsx';
+import { BulletJournal } from './components/BulletJournal';
 import { WeeklyLog } from './components/WeeklyLog';
 import { MonthlyLog } from './components/MonthlyLog';
 import { HabitTracker } from './components/HabitTracker';
@@ -13,6 +13,17 @@ import { MoodTracker } from './components/MoodTracker';
 import { FinanceTracker } from './components/FinanceTracker';
 import { GratitudeJournal } from './components/GratitudeJournal';
 import { FutureLog } from './components/FutureLog';
+
+const safeJSONParse = (key: string, defaultValue: any) => {
+    try {
+        const saved = localStorage.getItem(key);
+        if (!saved || saved === 'null') return defaultValue;
+        return JSON.parse(saved) || defaultValue;
+    } catch (e) {
+        console.error(`Error parsing ${key}:`, e);
+        return defaultValue;
+    }
+};
 
 import { Source, AppTab, Folder, SavedItem, UserProfile, SyllabusTopic, StudySession, MockExam, ExamDate, WeeklyTask, BulletJournalState } from './types';
 
@@ -35,44 +46,20 @@ function App() {
     });
 
     // -- EXISTING DATA --
-    const [sources, setSources] = useState<Source[]>(() => {
-        try { return JSON.parse(localStorage.getItem('barra_sources') || '[]'); } catch (e) { return []; }
-    });
-    const [folders, setFolders] = useState<Folder[]>(() => {
-        try { return JSON.parse(localStorage.getItem('barra_folders') || '[]'); } catch (e) { return []; }
-    });
-    const [savedItems, setSavedItems] = useState<SavedItem[]>(() => {
-        try { return JSON.parse(localStorage.getItem('barra_saved_items') || '[]'); } catch (e) { return []; }
-    });
+    const [sources, setSources] = useState<Source[]>(() => safeJSONParse('barra_sources', []));
+    const [folders, setFolders] = useState<Folder[]>(() => safeJSONParse('barra_folders', []));
+    const [savedItems, setSavedItems] = useState<SavedItem[]>(() => safeJSONParse('barra_saved_items', []));
 
     // -- NEW DATA STATES --
-    const [topics, setTopics] = useState<SyllabusTopic[]>(() => {
-        try { return JSON.parse(localStorage.getItem('barra_syllabus') || '[]'); } catch (e) { return []; }
-    });
-    const [sessions, setSessions] = useState<StudySession[]>(() => {
-        try { return JSON.parse(localStorage.getItem('barra_sessions') || '[]'); } catch (e) { return []; }
-    });
-    const [mockExams, setMockExams] = useState<MockExam[]>(() => {
-        try { return JSON.parse(localStorage.getItem('barra_mocks') || '[]'); } catch (e) { return []; }
-    });
-    const [examDates, setExamDates] = useState<ExamDate[]>(() => {
-        try { return JSON.parse(localStorage.getItem('barra_exams') || '[]'); } catch (e) { return []; }
-    });
-    const [weeklyTasks, setWeeklyTasks] = useState<WeeklyTask[]>(() => {
-        try { return JSON.parse(localStorage.getItem('barra_tasks') || '[]'); } catch (e) { return []; }
-    });
+    const [topics, setTopics] = useState<SyllabusTopic[]>(() => safeJSONParse('barra_syllabus', []));
+    const [sessions, setSessions] = useState<StudySession[]>(() => safeJSONParse('barra_sessions', []));
+    const [mockExams, setMockExams] = useState<MockExam[]>(() => safeJSONParse('barra_mocks', []));
+    const [examDates, setExamDates] = useState<ExamDate[]>(() => safeJSONParse('barra_exams', []));
+    const [weeklyTasks, setWeeklyTasks] = useState<WeeklyTask[]>(() => safeJSONParse('barra_tasks', []));
     const [bujoState, setBujoState] = useState<BulletJournalState>(() => {
         const defaultState = { entries: [], collections: [], habits: [], moods: [], finances: [], gratitude: [] };
-        try {
-            const saved = localStorage.getItem('barra_bujo');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                return { ...defaultState, ...parsed };
-            }
-            return defaultState;
-        } catch (e) {
-            return defaultState;
-        }
+        const saved = safeJSONParse('barra_bujo', defaultState);
+        return { ...defaultState, ...saved };
     });
 
     const [activeTab, setActiveTab] = useState<AppTab>(AppTab.DIARIO); // Default to Diario
