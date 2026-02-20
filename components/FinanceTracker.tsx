@@ -1,7 +1,5 @@
-
 import * as React from 'react';
-import { useState } from 'react';
-import { BulletJournalState, FinanceEntry } from '../types';
+import { BulletJournalState } from '../types';
 
 interface FinanceTrackerProps {
     state: BulletJournalState;
@@ -9,113 +7,108 @@ interface FinanceTrackerProps {
 }
 
 export const FinanceTracker: React.FC<FinanceTrackerProps> = ({ state, setState }) => {
-    const [description, setDescription] = useState('');
-    const [amount, setAmount] = useState('');
-    const [type, setType] = useState<'income' | 'expense'>('expense');
-    const [category, setCategory] = useState('Geral');
+    const [amount, setAmount] = React.useState('');
+    const [desc, setDesc] = React.useState('');
+    const [type, setType] = React.useState<'income' | 'expense'>('expense');
 
-    const addEntry = () => {
-        if (!description || !amount) return;
-        const newEntry: FinanceEntry = {
+    const addTransaction = () => {
+        if (!amount || !desc) return;
+        const newTx = {
             id: crypto.randomUUID(),
-            date: new Date().toISOString().split('T')[0],
-            description,
             amount: parseFloat(amount),
+            description: desc,
             type,
-            category
+            date: new Date().toISOString()
         };
-        setState({ ...state, finances: [newEntry, ...state.finances] });
-        setDescription('');
+        setState({ ...state, transactions: [newTx, ...state.transactions] });
         setAmount('');
+        setDesc('');
     };
 
-    const totals = state.finances.reduce((acc, curr) => {
-        if (curr.type === 'income') acc.income += curr.amount;
-        else acc.expense += curr.amount;
-        return acc;
-    }, { income: 0, expense: 0 });
-
-    const balance = totals.income - totals.expense;
+    const balance = state.transactions.reduce((acc, tx) =>
+        tx.type === 'income' ? acc + tx.amount : acc - tx.amount, 0
+    );
 
     return (
-        <div className="h-full overflow-y-auto p-6 md:p-10">
-            <h2 className="text-3xl font-black text-black mb-8">Controle Financeiro</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Entradas</p>
-                    <p className="text-3xl font-black text-green-500">R$ {totals.income.toFixed(2)}</p>
+        <div className="h-full overflow-y-auto p-10 font-inter bg-zinc-50/10">
+            <div className="flex items-end justify-between mb-12 border-b border-zinc-100 pb-8 max-w-4xl mx-auto">
+                <div>
+                    <h2 className="text-3xl font-extrabold text-zinc-900 tracking-tight uppercase">FINANÇAS</h2>
+                    <p className="text-sm text-zinc-500 mt-1 font-medium italic">Gestão consciente do seu capital.</p>
                 </div>
-                <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Saídas</p>
-                    <p className="text-3xl font-black text-red-500">R$ {totals.expense.toFixed(2)}</p>
-                </div>
-                <div className="bg-black p-8 rounded-[2.5rem] shadow-xl">
-                    <p className="text-[10px] font-black text-[#E6FF57]/50 uppercase tracking-widest mb-2">Saldo</p>
-                    <p className="text-3xl font-black text-[#E6FF57]">R$ {balance.toFixed(2)}</p>
+                <div className="text-[11px] font-black bg-zinc-900 text-white px-5 py-2 rounded-lg uppercase tracking-widest shadow-sm">
+                    Fluxo de Caixa
                 </div>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-10">
-                <div className="w-full md:w-80 space-y-6">
-                    <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
-                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Nova Transação</h3>
-                        <div className="space-y-4">
-                            <input
-                                value={description}
-                                onChange={e => setDescription(e.target.value)}
-                                placeholder="Descrição"
-                                className="w-full px-5 py-3 rounded-xl bg-gray-50 border-none text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all outline-none"
-                            />
-                            <div className="flex gap-2">
-                                <input
-                                    type="number"
-                                    value={amount}
-                                    onChange={e => setAmount(e.target.value)}
-                                    placeholder="Valor"
-                                    className="flex-1 px-5 py-3 rounded-xl bg-gray-50 border-none text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all outline-none"
-                                />
-                                <select
-                                    value={type}
-                                    onChange={e => setType(e.target.value as 'income' | 'expense')}
-                                    className="px-4 py-3 rounded-xl bg-gray-50 border-none text-xs font-bold uppercase transition-all outline-none"
-                                >
-                                    <option value="expense">📉 Saída</option>
-                                    <option value="income">📈 Entrada</option>
-                                </select>
-                            </div>
-                            <button
-                                onClick={addEntry}
-                                className="w-full bg-black text-[#E6FF57] py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg hover:scale-[1.02] active:scale-95 transition-all"
-                            >
-                                Adicionar
-                            </button>
+            <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div className="bg-white border border-zinc-100 rounded-2xl p-8 shadow-sm col-span-2">
+                    <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-6">Nova Transação</h3>
+                    <div className="flex flex-col md:flex-row gap-4 mb-6">
+                        <select
+                            value={type}
+                            onChange={(e) => setType(e.target.value as any)}
+                            className="bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-zinc-300"
+                        >
+                            <option value="expense">Despesa</option>
+                            <option value="income">Receita</option>
+                        </select>
+                        <input
+                            placeholder="Valor"
+                            type="number"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            className="flex-1 bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-zinc-300"
+                        />
+                    </div>
+                    <input
+                        placeholder="Descrição"
+                        value={desc}
+                        onChange={(e) => setDesc(e.target.value)}
+                        className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium mb-6 focus:outline-none focus:border-zinc-300"
+                    />
+                    <button
+                        onClick={addTransaction}
+                        className="w-full bg-zinc-900 text-white py-4 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-600 transition-colors shadow-lg shadow-zinc-200"
+                    >
+                        Registrar Transação
+                    </button>
+                </div>
+
+                <div className="bg-zinc-900 rounded-2xl p-8 text-white flex flex-col justify-between shadow-2xl">
+                    <div>
+                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Saldo Atual</p>
+                        <p className="text-4xl font-black tracking-tight">R$ {balance.toFixed(2)}</p>
+                    </div>
+                    <div className="mt-8 pt-8 border-t border-zinc-800">
+                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">Resumo</p>
+                        <div className="flex justify-between text-xs font-bold">
+                            <span className="text-zinc-400">Receitas</span>
+                            <span className="text-indigo-400">+ R$ {state.transactions.filter(t => t.type === 'income').reduce((a, b) => a + b.amount, 0).toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div className="flex-1 bg-white rounded-[2.5rem] p-8 border border-black/5 shadow-sm overflow-hidden">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="border-b border-gray-50">
-                                <th className="text-left py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Data</th>
-                                <th className="text-left py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Descrição</th>
-                                <th className="text-right py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Valor</th>
+            <div className="max-w-4xl mx-auto bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden">
+                <table className="w-full text-left">
+                    <thead className="bg-zinc-50 border-b border-zinc-100">
+                        <tr>
+                            <th className="px-8 py-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Descrição</th>
+                            <th className="px-8 py-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-right">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-50">
+                        {state.transactions.map(tx => (
+                            <tr key={tx.id} className="hover:bg-zinc-50/50 transition-colors">
+                                <td className="px-8 py-4 text-sm font-semibold text-zinc-700">{tx.description}</td>
+                                <td className={`px-8 py-4 text-right text-sm font-bold ${tx.type === 'income' ? 'text-indigo-600' : 'text-zinc-900'}`}>
+                                    {tx.type === 'income' ? '+' : '-'} R$ {tx.amount.toFixed(2)}
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {state.finances.map(f => (
-                                <tr key={f.id} className="group">
-                                    <td className="py-4 text-xs font-bold text-gray-400">{new Date(f.date).toLocaleDateString('pt-BR')}</td>
-                                    <td className="py-4 text-sm font-bold text-gray-700">{f.description}</td>
-                                    <td className={`py-4 text-right text-sm font-black ${f.type === 'income' ? 'text-green-500' : 'text-gray-900'}`}>
-                                        {f.type === 'income' ? '+' : '-'} R$ {f.amount.toFixed(2)}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );

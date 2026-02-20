@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
-import { BulletJournalState, MoodEntry } from '../types';
+import { BulletJournalState } from '../types';
 
 interface MoodTrackerProps {
     state: BulletJournalState;
@@ -8,82 +7,73 @@ interface MoodTrackerProps {
 }
 
 export const MoodTracker: React.FC<MoodTrackerProps> = ({ state, setState }) => {
-    const [viewDate, setViewDate] = useState(new Date());
-
-    const moods: { type: MoodEntry['mood'], emoji: string, color: string, label: string }[] = [
-        { type: 'happy', emoji: '😊', color: '#FFF9C4', label: 'Feliz' },
-        { type: 'neutral', emoji: '😐', color: '#F5F5F5', label: 'Neutro' },
-        { type: 'sad', emoji: '😔', color: '#FFE0B2', label: 'Triste' },
-        { type: 'productive', emoji: '🚀', color: '#C8E6C9', label: 'Foco' },
-        { type: 'tired', emoji: '🥱', color: '#F8BBD0', label: 'Cansada' }
+    const moods = [
+        { emoji: '🤩', label: 'Radiante', color: 'bg-indigo-500', value: 5 },
+        { emoji: '😊', label: 'Bem', color: 'bg-zinc-900', value: 4 },
+        { emoji: '😐', label: 'Neutro', color: 'bg-zinc-400', value: 3 },
+        { emoji: '😔', label: 'Baixo', color: 'bg-zinc-200', value: 2 },
+        { emoji: '😫', label: 'Exausto', color: 'bg-zinc-100', value: 1 },
     ];
 
-    const currentDay = new Date().toISOString().split('T')[0];
-    const monthPrefix = viewDate.toISOString().substring(0, 7);
+    const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
-    const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
-    const daysCount = getDaysInMonth(viewDate.getFullYear(), viewDate.getMonth());
-
-    const setMood = (mood: MoodEntry['mood']) => {
-        const date = currentDay;
-        const existing = state.moods.findIndex(m => m.date === date);
-        let newMoods = [...state.moods];
-
-        if (existing >= 0) {
-            newMoods[existing].mood = mood;
-        } else {
-            newMoods.push({ date, mood });
-        }
-
-        setState({ ...state, moods: newMoods });
+    const setMood = (day: number, value: number) => {
+        const newMoods = { ...state.moodData, [day.toString()]: value };
+        setState({ ...state, moodData: newMoods });
     };
 
-    const getMoodForDate = (date: string) => state.moods.find(m => m.date === date);
-
     return (
-        <div className="h-full overflow-y-auto p-6 md:p-10">
-            <h2 className="text-3xl font-black text-black mb-10">Como você está hoje?</h2>
+        <div className="h-full overflow-y-auto p-10 font-inter bg-zinc-50/10">
+            <div className="flex items-end justify-between mb-12 border-b border-zinc-100 pb-8 max-w-4xl mx-auto">
+                <div>
+                    <h2 className="text-3xl font-extrabold text-zinc-900 tracking-tight uppercase">MOOD TRACKER</h2>
+                    <p className="text-sm text-zinc-500 mt-1 font-medium italic">Monitore sua energia mental.</p>
+                </div>
+            </div>
 
-            <div className="bg-white rounded-[3rem] p-10 shadow-sm border border-black/5 mb-10">
-                <div className="grid grid-cols-5 gap-6 max-w-2xl mx-auto">
-                    {moods.map(m => (
-                        <button
-                            key={m.type}
-                            onClick={() => setMood(m.type)}
-                            className={`flex flex-col items-center gap-3 p-6 rounded-[2rem] transition-all hover:scale-110 ${getMoodForDate(currentDay)?.mood === m.type
-                                ? 'bg-black text-white shadow-2xl'
-                                : 'bg-gray-50 text-gray-400 hover:bg-black/5'
-                                }`}
-                        >
-                            <span className="text-4xl">{m.emoji}</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest">{m.label}</span>
-                        </button>
+            <div className="max-w-4xl mx-auto bg-white rounded-2xl p-10 shadow-sm border border-zinc-100">
+                <div className="grid grid-cols-7 gap-4">
+                    {days.map(day => (
+                        <div key={day} className="flex flex-col items-center">
+                            <span className="text-[10px] font-black text-zinc-300 mb-2">{day}</span>
+                            <div className="relative group">
+                                <button
+                                    className={`w-10 h-10 rounded-xl border transition-all flex items-center justify-center text-lg ${state.moodData[day.toString()]
+                                            ? moods.find(m => m.value === state.moodData[day.toString()])?.color + ' text-white border-transparent shadow-md'
+                                            : 'bg-zinc-50 border-zinc-100 hover:border-zinc-300'
+                                        }`}
+                                >
+                                    {state.moodData[day.toString()]
+                                        ? moods.find(m => m.value === state.moodData[day.toString()])?.emoji
+                                        : ''}
+                                </button>
+
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white border border-zinc-200 rounded-lg p-2 shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity z-20 pointer-events-none group-hover:pointer-events-auto flex gap-1">
+                                    {moods.map(m => (
+                                        <button
+                                            key={m.value}
+                                            onClick={() => setMood(day, m.value)}
+                                            className="w-8 h-8 rounded-md hover:bg-zinc-100 flex items-center justify-center grayscale hover:grayscale-0 transition-all"
+                                        >
+                                            {m.emoji}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>
 
-            <div className="bg-white rounded-[3rem] p-10 shadow-sm border border-black/5">
-                <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-8 text-center italic">Mapa do Humor - Este Mês</h3>
-                <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
-                    {Array.from({ length: daysCount }, (_, i) => {
-                        const date = `${monthPrefix}-${String(i + 1).padStart(2, '0')}`;
-                        const entry = getMoodForDate(date);
-                        const moodInfo = entry ? moods.find(m => m.type === entry.mood) : null;
-
-                        return (
-                            <div
-                                key={date}
-                                className="w-12 h-12 rounded-xl flex items-center justify-center text-xl transition-all border border-black/5 bg-gray-50 group relative"
-                                style={moodInfo ? { backgroundColor: moodInfo.color + '30', borderColor: moodInfo.color + '60' } : {}}
-                            >
-                                {moodInfo ? moodInfo.emoji : <span className="text-[10px] font-bold text-gray-200">{i + 1}</span>}
-
-                                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-[8px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20 font-black">
-                                    {new Date(date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-                                </div>
-                            </div>
-                        );
-                    })}
+            <div className="mt-12 max-w-4xl mx-auto p-8 bg-zinc-900 rounded-2xl text-white flex items-center justify-between">
+                <div>
+                    <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Média do Mês</h4>
+                    <p className="text-2xl font-bold">Estabilidade em alta ✨</p>
+                </div>
+                <div className="flex -space-x-2">
+                    {moods.slice(0, 3).map(m => (
+                        <div key={m.label} className={`w-8 h-8 rounded-full border-2 border-zinc-900 ${m.color} flex items-center justify-center text-xs`}>{m.emoji}</div>
+                    ))}
                 </div>
             </div>
         </div>
