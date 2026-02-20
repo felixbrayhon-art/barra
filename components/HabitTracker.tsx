@@ -12,8 +12,11 @@ const LineChart: React.FC<{
     habit: Habit;
     dates: string[];
     labels: string[];
-}> = ({ habit, dates, labels }) => {
-    const W = 700, H = 280, PAD_L = 50, PAD_R = 20, PAD_T = 20, PAD_B = 40;
+    yMin?: number | null;
+    yMax?: number | null;
+    yLabel?: string;
+}> = ({ habit, dates, labels, yMin: customYMin, yMax: customYMax, yLabel }) => {
+    const W = 700, H = 280, PAD_L = 56, PAD_R = 20, PAD_T = 20, PAD_B = 40;
     const chartW = W - PAD_L - PAD_R;
     const chartH = H - PAD_T - PAD_B;
 
@@ -21,8 +24,10 @@ const LineChart: React.FC<{
     const numericValues = values.filter(v => v !== null) as number[];
     if (numericValues.length === 0) return <p style={{ color: '#ccc', fontSize: 13, fontStyle: 'italic', padding: 20 }}>Sem dados registrados.</p>;
 
-    const maxV = Math.max(...numericValues, 1);
-    const minV = Math.min(...numericValues, 0);
+    const autoMax = Math.max(...numericValues, 1);
+    const autoMin = Math.min(...numericValues, 0);
+    const maxV = customYMax !== undefined && customYMax !== null ? customYMax : autoMax;
+    const minV = customYMin !== undefined && customYMin !== null ? customYMin : autoMin;
     const range = maxV - minV || 1;
 
     const getX = (i: number) => PAD_L + (i / (dates.length - 1)) * chartW;
@@ -57,6 +62,11 @@ const LineChart: React.FC<{
                     <text x={PAD_L - 8} y={y + 4} textAnchor="end" fill="#aaa" fontSize={10} fontWeight={600}>{v % 1 === 0 ? v : v.toFixed(1)}</text>
                 </g>;
             })}
+            {/* Y axis label (rotated) */}
+            {yLabel && (
+                <text x={12} y={PAD_T + chartH / 2} textAnchor="middle" fill="#bbb" fontSize={10} fontWeight={700}
+                    transform={`rotate(-90, 12, ${PAD_T + chartH / 2})`}>{yLabel}</text>
+            )}
             {/* Area fill */}
             <path d={areaD} fill="#000" opacity={0.04} />
             {/* Line */}
@@ -65,7 +75,7 @@ const LineChart: React.FC<{
             {dots.map((d, i) => (
                 <g key={i}>
                     <circle cx={d.x} cy={d.y} r={4} fill="#fff" stroke="#000" strokeWidth={2} />
-                    <title>{d.label}: {d.v} {''}</title>
+                    <title>{d.label}: {d.v} {yLabel || ''}</title>
                 </g>
             ))}
             {/* X labels */}
@@ -91,6 +101,9 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
     const [selectedHabit, setSelectedHabit] = useState<string | null>(null);
     const [editingValue, setEditingValue] = useState<{ habitId: string; date: string } | null>(null);
     const [inputValue, setInputValue] = useState('');
+    const [customYMin, setCustomYMin] = useState<string>('');
+    const [customYMax, setCustomYMax] = useState<string>('');
+    const [customYLabel, setCustomYLabel] = useState<string>('');
 
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const today = new Date().toISOString().split('T')[0];
@@ -370,7 +383,7 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
                         {state.habits.map(h => (
                             <button key={h.id} onClick={() => setSelectedHabit(h.id)}
                                 style={{
-                                    padding: '8px 16px', borderRadius: 10, border: 'none',
+                                    padding: '8px 16px', borderRadius: 10,
                                     background: selectedHabit === h.id ? '#000' : '#fafafa',
                                     color: selectedHabit === h.id ? '#fff' : '#555',
                                     fontWeight: 700, fontSize: 13, cursor: 'pointer',
@@ -389,28 +402,47 @@ export const HabitTracker: React.FC<HabitTrackerProps> = ({ state, setState }) =
                                 <div>
                                     <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>{activeHabit.name}</h3>
                                     <p style={{ fontSize: 11, color: '#aaa', marginTop: 2 }}>
-                                        {activeHabit.trackType === 'numeric'
-                                            ? `Eixo Y: ${activeHabit.unit || 'valor'} • Eixo X: ${chartRange === 'week' ? 'dias (semana)' : chartRange === 'month' ? 'dias (mês)' : 'meses (ano)'}`
-                                            : `Eixo Y: dias completados • Eixo X: ${chartRange === 'week' ? 'dias (semana)' : chartRange === 'month' ? 'dias (mês)' : 'meses (ano)'}`
-                                        }
+                                        Eixo X: {chartRange === 'week' ? 'dias (semana)' : chartRange === 'month' ? 'dias (mês)' : 'meses (ano)'}
                                     </p>
                                 </div>
                                 <div style={{ fontSize: 13, fontWeight: 800 }}>🔥 {getStreak(activeHabit)}</div>
                             </div>
 
+                            {/* Y-Axis Controls */}
+                            <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1 }}>Eixo Y:</span>
+                                <input value={customYLabel} onChange={e => setCustomYLabel(e.target.value)}
+                                    placeholder={activeHabit.unit || 'Rótulo (ex: horas)'}
+                                    style={{ width: 120, padding: '6px 10px', background: '#fff', border: '1px solid #e5e5e5', borderRadius: 6, fontSize: 12, outline: 'none', fontFamily: "'Inter'" }} />
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                    <span style={{ fontSize: 11, color: '#bbb' }}>Min:</span>
+                                    <input value={customYMin} onChange={e => setCustomYMin(e.target.value)} type="number" placeholder="auto"
+                                        style={{ width: 60, padding: '6px 8px', background: '#fff', border: '1px solid #e5e5e5', borderRadius: 6, fontSize: 12, outline: 'none', textAlign: 'center', fontFamily: "'Inter'" }} />
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                    <span style={{ fontSize: 11, color: '#bbb' }}>Max:</span>
+                                    <input value={customYMax} onChange={e => setCustomYMax(e.target.value)} type="number" placeholder="auto"
+                                        style={{ width: 60, padding: '6px 8px', background: '#fff', border: '1px solid #e5e5e5', borderRadius: 6, fontSize: 12, outline: 'none', textAlign: 'center', fontFamily: "'Inter'" }} />
+                                </div>
+                            </div>
+
                             {activeHabit.trackType === 'numeric' ? (
-                                <LineChart habit={activeHabit} {...getChartDates()} />
+                                <LineChart habit={activeHabit} {...getChartDates()}
+                                    yMin={customYMin ? parseFloat(customYMin) : null}
+                                    yMax={customYMax ? parseFloat(customYMax) : null}
+                                    yLabel={customYLabel || activeHabit.unit || ''} />
                             ) : (
-                                // For boolean habits, show completion count per period
                                 (() => {
                                     const { dates, labels } = getChartDates();
-                                    // Convert boolean completions to numeric (1/0) for charting
                                     const tempHabit: Habit = {
                                         ...activeHabit,
                                         trackType: 'numeric',
                                         values: Object.fromEntries(dates.map(d => [d, activeHabit.completions.includes(d) ? 1 : 0]))
                                     };
-                                    return <LineChart habit={tempHabit} dates={dates} labels={labels} />;
+                                    return <LineChart habit={tempHabit} dates={dates} labels={labels}
+                                        yMin={customYMin ? parseFloat(customYMin) : null}
+                                        yMax={customYMax ? parseFloat(customYMax) : null}
+                                        yLabel={customYLabel || 'completado'} />;
                                 })()
                             )}
                         </div>
