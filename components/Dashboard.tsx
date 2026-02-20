@@ -1,130 +1,107 @@
-
-import React, { useState } from 'react';
-import { StudySession, MockExam, SyllabusTopic } from '../types';
+import * as React from 'react';
+import { BulletJournalState } from '../types';
 
 interface DashboardProps {
-  sessions: StudySession[];
-  mockExams: MockExam[];
-  setMockExams: (exams: MockExam[]) => void;
-  topics: SyllabusTopic[];
+    state: BulletJournalState;
+    userName: string;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ sessions, mockExams, setMockExams, topics }) => {
-  const [newMock, setNewMock] = useState({ title: '', score: 0, total: 100 });
+export const Dashboard: React.FC<DashboardProps> = ({ state, userName }) => {
+    const today = new Date().toISOString().split('T')[0];
+    const todayEntries = state.entries.filter(e => e.date === today);
+    const completedToday = todayEntries.filter(e => e.type === 'completed').length;
+    const pendingToday = todayEntries.filter(e => e.type === 'task').length;
+    const totalEntries = state.entries.length;
+    const totalHabits = state.habits.length;
+    const totalFinances = state.finances.length;
+    const todayMood = state.moods.find(m => m.date === today);
+    const todayGratitude = state.gratitude.find(g => g.date === today);
 
-  const totalHours = sessions.reduce((acc, s) => acc + s.durationSeconds, 0) / 3600;
-  const studiedTopicsCount = topics.filter(t => t.studied).length;
-  const progressPercent = topics.length > 0 ? Math.round((studiedTopicsCount / topics.length) * 100) : 0;
-  
-  // Calculate revisions needed (simple logic: studied but mastery < 50)
-  const revisionsNeeded = topics.filter(t => t.studied && t.masteryLevel < 50).length;
+    const greeting = () => {
+        const h = new Date().getHours();
+        if (h < 12) return 'Bom dia';
+        if (h < 18) return 'Boa tarde';
+        return 'Boa noite';
+    };
 
-  const handleAddMock = () => {
-      if(!newMock.title) return;
-      const exam: MockExam = {
-          id: crypto.randomUUID(),
-          title: newMock.title,
-          score: newMock.score,
-          totalQuestions: newMock.total,
-          date: Date.now()
-      };
-      setMockExams([...mockExams, exam]);
-      setNewMock({ title: '', score: 0, total: 100 });
-  };
+    const stats = [
+        { label: 'Tarefas hoje', value: todayEntries.length, sub: `${completedToday} concluídas` },
+        { label: 'Pendentes', value: pendingToday, sub: 'para fazer' },
+        { label: 'Total registros', value: totalEntries, sub: 'no diário' },
+        { label: 'Hábitos', value: totalHabits, sub: 'rastreados' },
+        { label: 'Finanças', value: totalFinances, sub: 'lançamentos' },
+        { label: 'Coleções', value: state.collections.length, sub: 'criadas' },
+    ];
 
-  const deleteMock = (id: string) => {
-      setMockExams(mockExams.filter(m => m.id !== id));
-  };
+    return (
+        <div style={{
+            height: '100%', overflow: 'auto', background: '#fff', padding: '48px 64px',
+            fontFamily: "'Inter', sans-serif"
+        }}>
+            {/* Header */}
+            <div style={{ marginBottom: 48 }}>
+                <p style={{ fontSize: 14, color: '#999', fontWeight: 500, marginBottom: 4 }}>{greeting()},</p>
+                <h1 style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1.5, color: '#000', margin: 0 }}>
+                    {userName}
+                </h1>
+            </div>
 
-  return (
-    <div className="flex flex-col h-full bg-[#0F1115] overflow-y-auto p-6 md:p-10 pb-32">
-         <h2 className="text-3xl font-black text-white mb-8">Performance<span className="text-[#E6FF57]">.</span></h2>
+            {/* Stats Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 48 }}>
+                {stats.map((s, i) => (
+                    <div key={i} style={{
+                        padding: '24px', borderRadius: 16,
+                        background: i === 0 ? '#000' : '#fafafa',
+                        color: i === 0 ? '#fff' : '#000',
+                        border: i === 0 ? 'none' : '1px solid #eee'
+                    }}>
+                        <div style={{ fontSize: 32, fontWeight: 900, marginBottom: 4 }}>{s.value}</div>
+                        <div style={{ fontSize: 13, fontWeight: 700 }}>{s.label}</div>
+                        <div style={{ fontSize: 11, color: i === 0 ? '#888' : '#aaa', marginTop: 2 }}>{s.sub}</div>
+                    </div>
+                ))}
+            </div>
 
-         {/* STATS CARDS */}
-         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-             <div className="bg-[#1C1F26] p-5 rounded-2xl border border-white/5">
-                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Horas Líquidas</p>
-                 <p className="text-3xl font-black text-white">{totalHours.toFixed(1)}<span className="text-sm text-gray-500 ml-1">h</span></p>
-             </div>
-             <div className="bg-[#1C1F26] p-5 rounded-2xl border border-white/5">
-                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Edital Concluído</p>
-                 <p className="text-3xl font-black text-[#E6FF57]">{progressPercent}%</p>
-             </div>
-             <div className="bg-[#1C1F26] p-5 rounded-2xl border border-white/5">
-                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Tópicos Vencidos</p>
-                 <p className="text-3xl font-black text-white">{studiedTopicsCount}<span className="text-sm text-gray-500 ml-1">/{topics.length}</span></p>
-             </div>
-             <div className="bg-[#1C1F26] p-5 rounded-2xl border border-white/5">
-                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Revisões Pendentes</p>
-                 <p className="text-3xl font-black text-red-400">{revisionsNeeded}</p>
-             </div>
-         </div>
+            {/* Today's Quick View */}
+            <div style={{ marginBottom: 40 }}>
+                <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16, color: '#000' }}>Hoje</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    {/* Mood */}
+                    <div style={{ padding: 20, background: '#fafafa', borderRadius: 12, border: '1px solid #eee' }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Humor</p>
+                        <p style={{ fontSize: 20 }}>{todayMood ? { happy: '😊', neutral: '😐', sad: '😔', productive: '💪', tired: '😴' }[todayMood.mood] : '—'}</p>
+                    </div>
+                    {/* Gratitude */}
+                    <div style={{ padding: 20, background: '#fafafa', borderRadius: 12, border: '1px solid #eee' }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Gratidão</p>
+                        <p style={{ fontSize: 13, color: todayGratitude ? '#000' : '#ccc', fontStyle: todayGratitude ? 'normal' : 'italic' }}>
+                            {todayGratitude ? todayGratitude.text : 'Nada registrado ainda'}
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-         {/* MOCK EXAMS */}
-         <div className="bg-[#1C1F26] border border-white/5 rounded-[2rem] p-8 mb-8">
-             <h3 className="text-xl font-bold text-white mb-6">Histórico de Simulados</h3>
-             
-             <div className="flex flex-col md:flex-row gap-4 mb-6 bg-[#0F1115] p-4 rounded-xl border border-white/5">
-                 <input 
-                    className="flex-1 bg-transparent border-b border-white/20 text-white pb-2 outline-none focus:border-[#E6FF57]"
-                    placeholder="Nome do Simulado..."
-                    value={newMock.title}
-                    onChange={e => setNewMock({...newMock, title: e.target.value})}
-                 />
-                 <div className="flex items-center gap-2">
-                     <span className="text-xs text-gray-500">Acertos:</span>
-                     <input 
-                        type="number"
-                        className="w-16 bg-transparent border-b border-white/20 text-white pb-2 outline-none text-center"
-                        value={newMock.score}
-                        onChange={e => setNewMock({...newMock, score: parseInt(e.target.value) || 0})}
-                     />
-                 </div>
-                 <div className="flex items-center gap-2">
-                     <span className="text-xs text-gray-500">Total:</span>
-                     <input 
-                        type="number"
-                        className="w-16 bg-transparent border-b border-white/20 text-white pb-2 outline-none text-center"
-                        value={newMock.total}
-                        onChange={e => setNewMock({...newMock, total: parseInt(e.target.value) || 0})}
-                     />
-                 </div>
-                 <button 
-                    onClick={handleAddMock}
-                    className="bg-[#E6FF57] text-black px-4 py-2 rounded-lg font-bold text-sm hover:scale-105 transition-transform"
-                 >
-                     Adicionar
-                 </button>
-             </div>
-
-             <div className="space-y-3">
-                 {mockExams.map(mock => {
-                     const percent = Math.round((mock.score / mock.totalQuestions) * 100);
-                     let color = "text-red-400";
-                     if(percent >= 80) color = "text-green-400";
-                     else if (percent >= 60) color = "text-yellow-400";
-
-                     return (
-                         <div key={mock.id} className="flex items-center justify-between p-4 bg-[#0F1115] rounded-xl border border-white/5">
-                             <div>
-                                 <p className="font-bold text-white">{mock.title}</p>
-                                 <p className="text-xs text-gray-500">{new Date(mock.date).toLocaleDateString()}</p>
-                             </div>
-                             <div className="flex items-center gap-4">
-                                 <div className="text-right">
-                                     <span className={`text-xl font-black ${color}`}>{percent}%</span>
-                                     <p className="text-[10px] text-gray-500">{mock.score}/{mock.totalQuestions}</p>
-                                 </div>
-                                 <button onClick={() => deleteMock(mock.id)} className="text-gray-600 hover:text-red-400">
-                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                                 </button>
-                             </div>
-                         </div>
-                     )
-                 })}
-                 {mockExams.length === 0 && <p className="text-center text-gray-600 py-4">Nenhum simulado registrado.</p>}
-             </div>
-         </div>
-    </div>
-  );
+            {/* Recent entries */}
+            <div>
+                <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16, color: '#000' }}>Últimas entradas</h2>
+                {state.entries.slice(-5).reverse().map(entry => (
+                    <div key={entry.id} style={{
+                        display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0',
+                        borderBottom: '1px solid #f5f5f5', fontSize: 13
+                    }}>
+                        <span style={{ fontFamily: 'monospace', color: '#aaa' }}>
+                            {entry.type === 'task' ? '•' : entry.type === 'completed' ? '✕' : '○'}
+                        </span>
+                        <span style={{ flex: 1, color: entry.type === 'completed' ? '#aaa' : '#000', textDecoration: entry.type === 'completed' ? 'line-through' : 'none' }}>
+                            {entry.text}
+                        </span>
+                        <span style={{ fontSize: 11, color: '#ccc' }}>{entry.date}</span>
+                    </div>
+                ))}
+                {state.entries.length === 0 && (
+                    <p style={{ color: '#ccc', fontSize: 13, fontStyle: 'italic' }}>Nenhuma entrada ainda. Comece pelo Diário!</p>
+                )}
+            </div>
+        </div>
+    );
 };

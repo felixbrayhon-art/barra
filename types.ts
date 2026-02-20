@@ -16,6 +16,7 @@ export interface ChatMessage {
 }
 
 export enum AppTab {
+  INICIO = 'INICIO',
   DIARIO = 'DIARIO',
   SEMANAL = 'SEMANAL',
   MENSAL = 'MENSAL',
