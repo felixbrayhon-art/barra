@@ -103,78 +103,127 @@ function App() {
         <div style={{ display: 'flex', height: '100vh', background: '#fff', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
             {/* Sidebar */}
             <div style={{
-                width: 260, background: '#fff', display: 'flex', flexDirection: 'column',
-                borderRight: '1px solid #eee', flexShrink: 0
+                width: 280,
+                background: '#0f172a',
+                display: 'flex',
+                flexDirection: 'column',
+                flexShrink: 0,
+                color: '#fff'
             }}>
-                {/* Logo */}
-                <div style={{ padding: '32px 24px 24px' }}>
-                    <h1 style={{ fontSize: 22, fontWeight: 900, letterSpacing: -1, color: '#000', margin: 0 }}>
-                        MEU BULLET
+                {/* Logo & Header */}
+                <div style={{ padding: '40px 32px 32px 32px' }}>
+                    <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: -0.5, color: '#fff', margin: 0 }}>
+                        Bullet Journal
                     </h1>
-                    <button onClick={() => setActivePage('perfil')}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: 10, marginTop: 12,
-                            background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                            fontFamily: "'Inter', sans-serif"
-                        }}
-                        onMouseOver={e => (e.currentTarget.style.opacity = '0.6')}
-                        onMouseOut={e => (e.currentTarget.style.opacity = '1')}
-                    >
-                        <div style={{
-                            width: 28, height: 28, borderRadius: '50%', background: '#111',
-                            color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 12, fontWeight: 800
-                        }}>{userProfile.avatar || userProfile.name.charAt(0).toUpperCase()}</div>
-                        <span style={{ fontSize: 12, color: '#999', fontWeight: 600 }}>{userProfile.name}</span>
-                        <span style={{ fontSize: 10, color: '#ccc' }}>✎</span>
-                    </button>
+                    <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 4, fontWeight: 500 }}>
+                        Organize sua vida
+                    </p>
                 </div>
 
                 {/* Nav Items */}
-                <nav style={{ flex: 1, padding: '0 12px', overflowY: 'auto' }}>
+                <nav style={{ flex: 1, padding: '0 16px', overflowY: 'auto' }}>
                     {NAV_ITEMS.map(item => {
                         const isActive = activePage === item.key;
                         return (
-                            <button key={item.key} onClick={() => setActivePage(item.key)}
+                            <button
+                                key={item.key}
+                                onClick={() => setActivePage(item.key)}
                                 style={{
-                                    width: '100%', display: 'flex', alignItems: 'center', gap: 14,
-                                    padding: '12px 16px', borderRadius: 12, border: 'none',
-                                    background: isActive ? '#111' : 'transparent',
-                                    color: isActive ? '#fff' : '#555',
-                                    cursor: 'pointer', fontSize: 14, fontWeight: isActive ? 700 : 500,
-                                    marginBottom: 2, textAlign: 'left',
-                                    transition: 'all 0.15s ease', fontFamily: "'Inter', sans-serif"
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 16,
+                                    padding: '12px 16px',
+                                    borderRadius: 12,
+                                    border: 'none',
+                                    background: isActive ? '#1e293b' : 'transparent',
+                                    color: isActive ? '#fff' : '#94a3b8',
+                                    cursor: 'pointer',
+                                    fontSize: 14,
+                                    fontWeight: isActive ? 600 : 500,
+                                    marginBottom: 4,
+                                    textAlign: 'left',
+                                    transition: 'all 0.2s ease',
+                                    fontFamily: "'Inter', sans-serif"
                                 }}
-                                onMouseOver={e => { if (!isActive) e.currentTarget.style.background = '#fafafa'; }}
-                                onMouseOut={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
+                                onMouseEnter={(e) => {
+                                    if (!isActive) {
+                                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                                        e.currentTarget.style.color = '#fff';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isActive) {
+                                        e.currentTarget.style.background = 'transparent';
+                                        e.currentTarget.style.color = '#94a3b8';
+                                    }
+                                }}
                             >
-                                <span style={{ fontSize: 18, width: 24, textAlign: 'center', opacity: isActive ? 1 : 0.5 }}>{item.icon}</span>
+                                <div style={{
+                                    width: 32,
+                                    height: 32,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderRadius: 8,
+                                    background: isActive ? '#0f172a' : 'rgba(255, 255, 255, 0.05)',
+                                    fontSize: 18
+                                }}>
+                                    {/* Using simple icons for now, can be replaced by Lucide if needed */}
+                                    {item.key === 'inicio' ? '🏠' :
+                                        item.key === 'futuro' ? '📅' :
+                                            item.key === 'mensal' ? '🗓️' :
+                                                item.key === 'semanal' ? '🗒️' :
+                                                    item.key === 'diario' ? '📓' :
+                                                        item.key === 'colecoes' ? '📑' :
+                                                            item.key === 'habitos' ? '📈' :
+                                                                item.key === 'humor' ? '😊' :
+                                                                    item.key === 'financas' ? '💰' :
+                                                                        '❤️'}
+                                </div>
                                 <span>{item.label}</span>
                             </button>
                         );
                     })}
                 </nav>
 
-                {/* Footer */}
-                <div style={{ padding: '16px 12px', borderTop: '1px solid #f0f0f0' }}>
-                    <button onClick={() => setActivePage('chat')}
+                {/* Footer User Info */}
+                <div style={{ padding: '24px 16px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                    <button
+                        onClick={() => setActivePage('perfil')}
                         style={{
-                            width: '100%', padding: '10px 16px', borderRadius: 10,
-                            background: activePage === 'chat' ? '#000' : '#fafafa',
-                            color: activePage === 'chat' ? '#fff' : '#888',
-                            border: activePage === 'chat' ? 'none' : '1px solid #eee',
-                            fontWeight: 700, fontSize: 13, cursor: 'pointer', marginBottom: 8,
-                            fontFamily: "'Inter', sans-serif"
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 12,
+                            padding: '12px',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: 'none',
+                            borderRadius: 12,
+                            cursor: 'pointer',
+                            color: '#fff',
+                            transition: 'background 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+                    >
+                        <div style={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: '50%',
+                            background: '#334155',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 14,
+                            fontWeight: 700
                         }}>
-                        💬 Assistente
-                    </button>
-                    <button onClick={handleResetApp}
-                        style={{
-                            width: '100%', padding: '8px', background: 'transparent', color: '#ccc',
-                            border: 'none', fontSize: 11, cursor: 'pointer', fontWeight: 600,
-                            fontFamily: "'Inter', sans-serif"
-                        }}>
-                        Redefinir App
+                            {userProfile.avatar || userProfile.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div style={{ textAlign: 'left' }}>
+                            <div style={{ fontSize: 13, fontWeight: 600 }}>{userProfile.name}</div>
+                            <div style={{ fontSize: 11, color: '#64748b' }}>Ver perfil</div>
+                        </div>
                     </button>
                 </div>
             </div>
