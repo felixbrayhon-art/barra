@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { UserProfile } from '../types';
 
 interface OnboardingProps {
-  onComplete: (profile: UserProfile) => void;
+    onComplete: (profile: UserProfile) => void;
 }
 
 // Icon paths for avatars
@@ -16,81 +17,82 @@ const ICON_AVATARS = [
 ];
 
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
-  const [name, setName] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState(ICON_AVATARS[0]);
+    useEffect(() => { console.log("Onboarding.tsx: Component mounted"); }, []);
+    const [name, setName] = useState('');
+    const [selectedAvatar, setSelectedAvatar] = useState(ICON_AVATARS[0]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-    onComplete({
-        name: name.trim(),
-        avatar: selectedAvatar // Now saving the SVG path data
-    });
-  };
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!name.trim()) return;
+        onComplete({
+            name: name.trim(),
+            avatar: selectedAvatar // Now saving the SVG path data
+        });
+    };
 
-  return (
-    <div className="fixed inset-0 bg-[#0F1115] flex flex-col items-center justify-center z-40 font-poppins animate-in fade-in duration-500">
-      <div className="w-full max-w-md p-8">
-        
-        <div className="text-center mb-10">
-            <div className="inline-block mb-6 relative">
-                 <div className="absolute inset-0 bg-[#E6FF57] blur-2xl opacity-20 rounded-full"></div>
-                 <svg viewBox="0 0 24 24" className="w-24 h-24 relative z-10" shapeRendering="crispEdges">
-                    <rect x="11" y="3" width="2" height="12" fill="#D4A373" />
-                    <rect x="13" y="3" width="4" height="3" fill="#EF4444" />
-                    <rect x="13" y="7" width="6" height="6" fill="#FFFFFF" />
-                    <rect x="5" y="8" width="6" height="5" fill="#E5E7EB" />
-                    <rect x="3" y="15" width="18" height="2" fill="#8B4513" />
-                    <rect x="4" y="17" width="16" height="2" fill="#A0522D" />
-                    <rect x="6" y="19" width="12" height="1" fill="#5D2E0E" />
-                 </svg>
-            </div>
-            <h1 className="text-4xl font-black text-white mb-2">Bem-vindo a Bordo</h1>
-            <p className="text-gray-400">Configure seu perfil para começar a jornada.</p>
-        </div>
+    return (
+        <div className="fixed inset-0 bg-[#0F1115] flex flex-col items-center justify-center z-40 font-poppins animate-in fade-in duration-500">
+            <div className="w-full max-w-md p-8">
 
-        <form onSubmit={handleSubmit} className="space-y-8 bg-[#1C1F26] p-8 rounded-[2rem] border border-white/5 shadow-2xl">
-            
-            <div className="space-y-3">
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest text-center">Escolha seu Ícone</label>
-                <div className="flex flex-wrap justify-center gap-3">
-                    {ICON_AVATARS.map((path, idx) => (
-                        <button
-                            key={idx}
-                            type="button"
-                            onClick={() => setSelectedAvatar(path)}
-                            className={`w-12 h-12 flex items-center justify-center rounded-xl transition-all ${selectedAvatar === path ? 'bg-[#E6FF57] text-black scale-110 shadow-lg shadow-yellow-400/20' : 'bg-[#0F1115] text-gray-500 hover:bg-white/10'}`}
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={path} />
-                            </svg>
-                        </button>
-                    ))}
+                <div className="text-center mb-10">
+                    <div className="inline-block mb-6 relative">
+                        <div className="absolute inset-0 bg-[#E6FF57] blur-2xl opacity-20 rounded-full"></div>
+                        <svg viewBox="0 0 24 24" className="w-24 h-24 relative z-10" shapeRendering="crispEdges">
+                            <rect x="11" y="3" width="2" height="12" fill="#D4A373" />
+                            <rect x="13" y="3" width="4" height="3" fill="#EF4444" />
+                            <rect x="13" y="7" width="6" height="6" fill="#FFFFFF" />
+                            <rect x="5" y="8" width="6" height="5" fill="#E5E7EB" />
+                            <rect x="3" y="15" width="18" height="2" fill="#8B4513" />
+                            <rect x="4" y="17" width="16" height="2" fill="#A0522D" />
+                            <rect x="6" y="19" width="12" height="1" fill="#5D2E0E" />
+                        </svg>
+                    </div>
+                    <h1 className="text-4xl font-black text-white mb-2">Bem-vindo a Bordo</h1>
+                    <p className="text-gray-400">Configure seu perfil para começar a jornada.</p>
                 </div>
+
+                <form onSubmit={handleSubmit} className="space-y-8 bg-[#1C1F26] p-8 rounded-[2rem] border border-white/5 shadow-2xl">
+
+                    <div className="space-y-3">
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest text-center">Escolha seu Ícone</label>
+                        <div className="flex flex-wrap justify-center gap-3">
+                            {ICON_AVATARS.map((path, idx) => (
+                                <button
+                                    key={idx}
+                                    type="button"
+                                    onClick={() => setSelectedAvatar(path)}
+                                    className={`w-12 h-12 flex items-center justify-center rounded-xl transition-all ${selectedAvatar === path ? 'bg-[#E6FF57] text-black scale-110 shadow-lg shadow-yellow-400/20' : 'bg-[#0F1115] text-gray-500 hover:bg-white/10'}`}
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={path} />
+                                    </svg>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest">Como devemos te chamar?</label>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Seu nome..."
+                            className="w-full bg-[#0F1115] border-2 border-transparent focus:border-[#E6FF57] rounded-xl p-4 text-white font-bold text-lg outline-none transition-colors placeholder:text-gray-700"
+                            autoFocus
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={!name.trim()}
+                        className="w-full py-4 bg-[#E6FF57] text-black font-black text-lg rounded-xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-yellow-400/10"
+                    >
+                        INICIAR ESTUDOS
+                    </button>
+                </form>
+
             </div>
-
-            <div className="space-y-2">
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest">Como devemos te chamar?</label>
-                <input 
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Seu nome..."
-                    className="w-full bg-[#0F1115] border-2 border-transparent focus:border-[#E6FF57] rounded-xl p-4 text-white font-bold text-lg outline-none transition-colors placeholder:text-gray-700"
-                    autoFocus
-                />
-            </div>
-
-            <button 
-                type="submit"
-                disabled={!name.trim()}
-                className="w-full py-4 bg-[#E6FF57] text-black font-black text-lg rounded-xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-yellow-400/10"
-            >
-                INICIAR ESTUDOS
-            </button>
-        </form>
-
-      </div>
-    </div>
-  );
+        </div>
+    );
 };

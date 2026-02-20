@@ -4,7 +4,7 @@ import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/ChatArea';
 import { SplashScreen } from './components/SplashScreen';
 import { Onboarding } from './components/Onboarding';
-import { BulletJournal } from './components/BulletJournal';
+import { BulletJournal } from './components/BulletJournal.tsx';
 import { WeeklyLog } from './components/WeeklyLog';
 import { MonthlyLog } from './components/MonthlyLog';
 import { HabitTracker } from './components/HabitTracker';
@@ -17,11 +17,21 @@ import { FutureLog } from './components/FutureLog';
 import { Source, AppTab, Folder, SavedItem, UserProfile, SyllabusTopic, StudySession, MockExam, ExamDate, WeeklyTask, BulletJournalState } from './types';
 
 function App() {
-    const [loading, setLoading] = useState(false);
+    console.log("App.tsx: Rendering App component");
+    const [loading, setLoading] = useState(true);
 
     // -- USER PROFILE --
     const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
-        try { return JSON.parse(localStorage.getItem('barra_user_profile') || 'null'); } catch (e) { return null; }
+        try {
+            const saved = localStorage.getItem('barra_user_profile');
+            if (!saved || saved === 'null') return null;
+            const parsed = JSON.parse(saved);
+            if (!parsed || !parsed.name) return null; // Ensure name exists
+            return parsed;
+        } catch (e) {
+            console.error("App.tsx: Error loading user profile:", e);
+            return null;
+        }
     });
 
     // -- EXISTING DATA --
@@ -149,6 +159,8 @@ function App() {
             window.location.reload();
         }
     };
+
+    console.log("App.tsx: State - loading:", loading, "userProfile:", !!userProfile, "activeTab:", activeTab);
 
     const getTabClass = (tab: AppTab) => `
     relative px-4 py-2 text-xs font-black rounded-[1rem] transition-all duration-300 flex items-center space-x-2 whitespace-nowrap
